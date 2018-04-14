@@ -1,0 +1,49 @@
+# OBJ files use the vertex (v), texcoord (vt), normal (vn), and face (f) notation,
+#  describing them exactly in this order. Since we only care about vertices
+#  at this point and will leave normals and faces (triangulation) for the
+#  program itself, we will only specify groups of vertices compromising
+#  the different finger curves, extracted from the fingerprint sensor.
+#  The program then transforms them into triangles and renders all the curves.
+
+# Curve 1 - 12 vertices
+v 23.6251106 37.5517512
+v 17.9190902 28.1086977
+v 15.2621468 34.6311786
+v 22.4808909 33.0598203
+v 31.4283543 30.5554499
+v 31.4283543 35.2011192
+v 12.8996628 11.1723728
+v 12.8996628 23.2196169
+v 15.2476835 2.6717990
+v 18.0734671 0.8771252
+v 17.9190902 12.5575166
+v 20.9544857 4.5716246
+
+# Curve 2 - 10 vertices
+v 24.3527571 28.9476489 
+v 20.8089223 13.9408768 
+v 20.8089223 24.1255636 
+v 24.0217463 25.3682568 
+v 31.3276215 25.3682568 
+v 31.8545037 27.3158813 
+v 24.0217463 15.6832174 
+v 24.0470046 4.6462538
+v 30.2570661 3.5720259
+v 27.3096139 0.9619385
+
+# Curve 3 - 10 vertices
+v 5.9950725 35.5038051
+v 5.9436965 20.9628324 
+v 5.9436965 25.5297616 
+v 3.0152888 7.6114375
+v 3.0152888 15.5641934 
+v 6.3230967 2.6717990
+v 7.7055904 15.9457655 
+v 10.6350443 33.2520802
+v 10.6350443 28.7245211
+v 9.9602638 7.9914218
+
+# Curve ("face") definitions
+f 0 1 2 3 4 5 6 7 8 9 10 11 0
+f 12 13 14 15 16 17 18 19 20 21 12
+f 22 23 24 25 26 27 28 29 30 31 22
