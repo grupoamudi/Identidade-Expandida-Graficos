@@ -2,14 +2,17 @@
 
 #include "ofMain.h"
 #include "FingerMesh.h"
+#include <memory>
 
 class ofApp : public ofBaseApp {
 private:
-    FingerMesh m;
+    //FingerMesh m;
+    unique_ptr<FingerMesh> m;
     ofLight light;
     //ofShader shader;
     bool statsEnabled = false;
     uint64_t lastFrameTime;
+    uint64_t startupTime;
 
 	public:
 		void setup();
