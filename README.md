@@ -1,6 +1,6 @@
 # Identidade Expandida - Gráficos
 
-Esse repositório guarda o projeto de código relacionado a parte de renderização da obra "Identidade Expandida", feita em colaboração com Anaísa Franco. Essa parte da obra é feita em C++11, usando a biblioteca [openframeworks.cc](OpenFrameworks) (que serve, dentre ouras coisas, como uma camada de abstração para a OpenGL; mesmo que não muito eficiente, ajuda demais a não se preocupar em cuidar da máquina de estado enorme que é a GL).
+Esse repositório guarda o projeto de código relacionado a parte de renderização da obra "Identidade Expandida", feita em colaboração com Anaísa Franco. Essa parte da obra é feita em C++11, usando a biblioteca [openframeworks.cc](OpenFrameworks) (que serve, dentre outras coisas, como uma camada de abstração para a OpenGL; mesmo que não muito eficiente, ajuda demais a não se preocupar em cuidar da máquina de estado enorme que é a GL).
 
 ## Funcionamento
 O aplicativo essencialmente monitora um diretório, procurando por um arquivo que define as curvas de uma digital (cujo nome é uma constante definida em código) gerada pelo componente / projeto *Identidade Expandida - Curvas*, que por sua vez lê um arquivo de imagem gerado pelo *Identidade Expandida - Captura* e o transforma em um arquivo de texto definindo os contornos da digital presente na imagem.
