@@ -2,15 +2,19 @@
 
 #include "ofMain.h"
 #include "FingerMesh.h"
+#include "FileDaemon.h"
+#include <fstream>
 #include <memory>
+#include <future>
 
 class ofApp : public ofBaseApp {
 private:
-    //FingerMesh m;
-    unique_ptr<FingerMesh> m;
+    shared_ptr<FingerMesh> mesh;
+    unique_ptr<FileDaemon> daemon;
     ofLight light;
     //ofShader shader;
     bool statsEnabled = false;
+    bool dummyFile = false;
     uint64_t lastFrameTime;
     uint64_t startupTime;
 

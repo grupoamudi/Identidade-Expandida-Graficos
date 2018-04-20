@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2F6FD2AF208A5F340024A988 /* FileDaemon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2F6FD2AD208A5F340024A988 /* FileDaemon.cpp */; };
 		2FCBC63F2068655D00B1E44D /* FingerMesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2FCBC63D2068655D00B1E44D /* FingerMesh.cpp */; };
 		E4328149138ABC9F0047C5CB /* openFrameworksDebug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E4328148138ABC890047C5CB /* openFrameworksDebug.a */; };
 		E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B69E1D0A3A1BDC003C02F2 /* main.cpp */; };
@@ -44,6 +45,8 @@
 
 /* Begin PBXFileReference section */
 		2F6FD2AB2087AE350024A988 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		2F6FD2AD208A5F340024A988 /* FileDaemon.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FileDaemon.cpp; sourceTree = "<group>"; };
+		2F6FD2AE208A5F340024A988 /* FileDaemon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FileDaemon.h; sourceTree = "<group>"; };
 		2FCBC63D2068655D00B1E44D /* FingerMesh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FingerMesh.cpp; sourceTree = "<group>"; };
 		2FCBC63E2068655D00B1E44D /* FingerMesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FingerMesh.h; sourceTree = "<group>"; };
 		E4328143138ABC890047C5CB /* openFrameworksLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = openFrameworksLib.xcodeproj; path = ../../../Downloads/of_v0.9.8_osx_release/libs/openFrameworksCompiled/project/osx/openFrameworksLib.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -120,6 +123,8 @@
 				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
 				E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */,
 				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
+				2F6FD2AD208A5F340024A988 /* FileDaemon.cpp */,
+				2F6FD2AE208A5F340024A988 /* FileDaemon.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -223,6 +228,7 @@
 				2FCBC63F2068655D00B1E44D /* FingerMesh.cpp in Sources */,
 				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
 				E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */,
+				2F6FD2AF208A5F340024A988 /* FileDaemon.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

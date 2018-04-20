@@ -16,19 +16,19 @@ void ofApp::setup(){
     //shader.setUniform3f("lightPos", 0, 0, 300);
     startupTime = ofGetSystemTime();
     
-    m = make_unique<FingerMesh>();
+    daemon = make_unique<FileDaemon>(&this->mesh, "TestFile.obj");
+    //mesh = make_shared<FingerMesh>();
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    // Filesystem part
     
     // Animation part
-    if (m) {
+    if (mesh) {
         const float phase = M_PI * (ofGetSystemTime() % 2048) / 1024.0f;
         const float offset = M_PI * 0.15f;
-        for (int x = 0; x < m->size(); x++) {
-            m->setHeight(x, 1.0f + 3.0f * powf((1.0f + cosf(phase - offset * x)) * 0.5f, 1.5));
+        for (int x = 0; x < mesh->size(); x++) {
+            mesh->setHeight(x, 1.0f + 3.0f * powf((1.0f + cosf(phase - offset * x)) * 0.5f, 1.5));
         }
     }
 }
@@ -38,7 +38,7 @@ void ofApp::draw(){
 	static int x = 0;
     
     if (statsEnabled) {
-        int numPolys = m ? accumulate(m->begin(), m->end(), 0, [](int acc, ofMesh mesh) { return acc + mesh.getIndices().size() - 6 ;}) : 0;
+        int numPolys = mesh ? accumulate(mesh->begin(), mesh->end(), 0, [](int acc, ofMesh mesh) { return acc + mesh.getIndices().size() - 6 ;}) : 0;
         string strPolys = "Num. Polys in scene: " + to_string(numPolys) + "\n";
         strPolys += "FPS: " + to_string(ofGetFrameRate()) + "\n";
         strPolys += "GPU load: ";
@@ -53,8 +53,8 @@ void ofApp::draw(){
     ofRotate(60, 1, 0, 0);
     //ofRotate(x * 0.1f, 0, 0, 1);
     uint64_t timeBegin = ofGetSystemTimeMicros();
-    if (m) {
-        m->draw();
+    if (mesh) {
+        mesh->draw();
     }
     lastFrameTime = ofGetSystemTimeMicros() - timeBegin;
     ofPopMatrix();
@@ -66,6 +66,16 @@ void ofApp::draw(){
 void ofApp::keyPressed(int key){
     if (key == 's') {
         statsEnabled ^= 1;
+    }
+    if (key == 'f') {
+        dummyFile ^= 1;
+        if (dummyFile) {
+            ofstream dummy("TestFile.obj", ios::trunc);
+            dummy << "v 0 0\nv 1 0\nv 1 1\nv 1 0\nf 0 1 2 3 0";
+        }
+        else {
+            remove("TestFile.obj");
+        }
     }
 }
 
