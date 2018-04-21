@@ -16,7 +16,7 @@ void ofApp::setup(){
     //shader.setUniform3f("lightPos", 0, 0, 300);
     startupTime = ofGetSystemTime();
     
-    daemon = make_unique<FileDaemon>(&this->mesh, "TestFile.obj");
+    daemon = make_unique<FileDaemon>(&this->mesh, "TestObj.obj");
     //mesh = make_shared<FingerMesh>();
 }
 
@@ -38,23 +38,35 @@ void ofApp::draw(){
 	static int x = 0;
     
     if (statsEnabled) {
-        int numPolys = mesh ? accumulate(mesh->begin(), mesh->end(), 0, [](int acc, ofMesh mesh) { return acc + mesh.getIndices().size() - 6 ;}) : 0;
-        string strPolys = "Num. Polys in scene: " + to_string(numPolys) + "\n";
-        strPolys += "FPS: " + to_string(ofGetFrameRate()) + "\n";
-        strPolys += "GPU load: ";
-        strPolys += to_string(lastFrameTime * .006f) + " %";
-        
-        ofDrawBitmapStringHighlight(strPolys, 10, 20);
+        if (daemon->isFileReady()) {
+            int numPolys = mesh ? accumulate(mesh->begin(), mesh->end(), 0, [](int acc, ofMesh mesh) { return acc + mesh.getIndices().size() - 6 ;}) : 0;
+            string strPolys = "Num. Polys in scene: " + to_string(numPolys) + "\n";
+            strPolys += "FPS: " + to_string(ofGetFrameRate()) + "\n";
+            strPolys += "GPU load: ";
+            strPolys += to_string(lastFrameTime * .006f) + " %";
+            
+            ofDrawBitmapStringHighlight(strPolys, 10, 20);
+        }
+        else {
+            ofDrawBitmapStringHighlight("No model currently loaded.", 10, 20);
+        }
     }
     
     ofPushMatrix();
     ofTranslate(512 + float(10) * sinf(x / float(30.0)), 384);
-    ofScale(25.0f, 25.0f);
-    ofRotate(60, 1, 0, 0);
+    ofScale(5.0f, 5.0f);
+    ofRotate(mouseY * (1.0/6.0f), 1, 0, 0);
+    ofRotate(mouseX * (1.0/6.0f), 0, 1, 0);
     //ofRotate(x * 0.1f, 0, 0, 1);
     uint64_t timeBegin = ofGetSystemTimeMicros();
-    if (mesh) {
-        mesh->draw();
+    
+    // We have to first check if the mesh is ready before rendering,
+    //  or we might stumble upon cases where this thread is acessing
+    //  an incomplete mesh object, therefore crashing the program.
+    if (daemon->isFileReady()){
+        if (mesh) {
+            mesh->draw();
+        }
     }
     lastFrameTime = ofGetSystemTimeMicros() - timeBegin;
     ofPopMatrix();
@@ -87,6 +99,8 @@ void ofApp::keyReleased(int key){
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y ){
     //light.setPosition(x, y, 300);
+    mouseX = x;
+    mouseY = y;
 }
 
 //--------------------------------------------------------------

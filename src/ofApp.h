@@ -17,6 +17,8 @@ private:
     bool dummyFile = false;
     uint64_t lastFrameTime;
     uint64_t startupTime;
+    int mouseX = 512;
+    int mouseY = 384;
 
 	public:
 		void setup();

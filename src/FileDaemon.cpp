@@ -7,10 +7,18 @@ FileDaemon :: FileDaemon(shared_ptr<FingerMesh> *ref, string fileName) : meshRef
 
 FileDaemon :: ~FileDaemon() {
     isDestroying = true;
-    daemonThread.join();
+    // Sometimes the thread may destroy immediately after
+    //  the previous instruction, in which case we'll crash
+    //  upon exit when joining the dead thread. Because of
+    //  this, we have to first check for joinability.
+    if (daemonThread.joinable()) {
+        daemonThread.join();
+    }
 }
 
 bool FileDaemon :: isFileReady() {
+    mut.lock();
+    mut.unlock();
     return state == FILE_LOADED ? true : false;
 }
 
@@ -38,7 +46,7 @@ void FileDaemon :: daemon() {
                     state = FILE_NONE;
                     meshRef->reset();
                     mut.unlock();
-                    cout << "File " << fileName << " deleted!";
+                    cout << "File " << fileName << " deleted!" << endl;
                 }
             }  break;
         }
