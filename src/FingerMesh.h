@@ -20,6 +20,7 @@ public:
 	void setHeight(const vector<float> heights);
     
     void draw();
+    void drawWithNormalColors();
     
     // Since we don't ever use the new() operator, the default
     //  destructor is enough for us.

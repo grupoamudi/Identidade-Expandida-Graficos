@@ -7,7 +7,7 @@
 //  to have some kind of mesh ready so we can test the
 //  animation and lighting functions.
 
-FingerMesh::FingerMesh() {
+FingerMesh :: FingerMesh() {
     // We want to make concentric rings around the meshes,
     //  so we can do this in three steps:
     // 1. Generate discs + squash in X axis
@@ -157,7 +157,7 @@ FingerMesh::FingerMesh() {
     }
 }
 
-FingerMesh::FingerMesh(string filePath) {
+FingerMesh :: FingerMesh(string filePath) {
     // If the file doesn't exist yet, the constructor
     //  will throw an exception and the object won't
     //  be initialized. The caller needs to be aware
@@ -244,44 +244,47 @@ FingerMesh::FingerMesh(string filePath) {
     }
 }
 
-void FingerMesh::draw() {
+void FingerMesh :: draw() {
     for (ofMesh mesh : *this) {
-        //mesh.drawWireframe();
-        mesh.draw();
-        
-        // The code below draws normals as colored lines,
-        //  but it's rather slow. Use for debugging only.
-//        auto verts = mesh.getVertices();
-//        auto norms = mesh.getNormals();
-//        vector<ofVec3f> normals(verts.size() * 2);
-//        vector<ofFloatColor> normalColors(norms.size() * 2);
-//        for (auto x = 0; x < verts.size(); x++) {
-//            normals[2 * x] = verts[x];
-//            ofVec3f vPlusN = verts[x] + norms[x];
-//            normals[2 * x + 1] = vPlusN;
-//            ofVec3f nNorm = (norms[x] * 0.5f) + 0.5f;
-//            ofFloatColor nColor = ofFloatColor(nNorm.x, nNorm.y, nNorm.z, 1.0f);
-//            normalColors[2 * x] = nColor;
-//            normalColors[2 * x + 1] = normalColors[2 * x];
-//        }
-//
-//        ofMesh normalView;
-//        normalView.setMode(OF_PRIMITIVE_LINES);
-//        normalView.addVertices(normals);
-//        normalView.addColors(normalColors);
-//
-//        normalView.draw();
+        mesh.drawWireframe();
+        //mesh.draw();
     }
 }
 
-void FingerMesh::setHeight(const size_t index, const float height) {
+void FingerMesh :: drawWithNormalColors() {
+    for (ofMesh mesh : *this) {
+        auto verts = mesh.getVertices();
+        auto norms = mesh.getNormals();
+        vector<ofVec3f> normals(verts.size() * 2);
+        vector<ofFloatColor> normalColors(norms.size() * 2);
+        for (auto x = 0; x < verts.size(); x++) {
+            normals[2 * x] = verts[x];
+            ofVec3f vPlusN = verts[x] + norms[x];
+            normals[2 * x + 1] = vPlusN;
+            ofVec3f nNorm = (norms[x] * 0.5f) + 0.5f;
+            ofFloatColor nColor = ofFloatColor(nNorm.x, nNorm.y, nNorm.z, 1.0f);
+            normalColors[2 * x] = nColor;
+            normalColors[2 * x + 1] = normalColors[2 * x];
+        }
+
+        ofMesh normalView;
+        normalView.setMode(OF_PRIMITIVE_LINES);
+        normalView.addVertices(normals);
+        normalView.addColors(normalColors);
+
+        normalView.draw();
+    }
+}
+
+
+void FingerMesh :: setHeight(const size_t index, const float height) {
     auto &vertices = this->at(index).getVertices();
     for (auto x = vertices.size() / 2; x < vertices.size(); x++) {
         vertices[x].z = height;
     }
 }
 
-void FingerMesh::setHeight(const vector<float> heights) {
+void FingerMesh :: setHeight(const vector<float> heights) {
     for (auto y = 0; y < heights.size() && y < this->size(); y++) {
         vector<ofVec3f> vertices = this->at(y).getVertices();
         for (auto x = vertices.size() / 2; x < vertices.size(); x++) {
