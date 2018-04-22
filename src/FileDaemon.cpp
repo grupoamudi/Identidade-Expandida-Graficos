@@ -17,23 +17,23 @@ FileDaemon :: ~FileDaemon() {
 }
 
 bool FileDaemon :: isFileReady() {
-    mut.lock();
-    mut.unlock();
+    lock_guard<mutex> lock(mut);
     return state == FILE_LOADED ? true : false;
 }
 
 void FileDaemon :: daemon() {
+    // I have a problem: what if the object is destroyed
+    //  as *this* comparison is running? EXC_BAD_ACCESS.
     while (isDestroying == false) {
         switch (state) {
             case FILE_NONE: {
                 ifstream file(fileName);
                 if (file.good()) {
+                    lock_guard<mutex> lock(mut);
                     state = FILE_LOADING;
                     cout << "File " << fileName << " found! Loading...";
-                    mut.lock();
                     *meshRef = make_shared<FingerMesh>(fileName);
                     state = FILE_LOADED;
-                    mut.unlock();
                     cout << " loaded." << endl;
                 }
             }  break;
@@ -42,10 +42,9 @@ void FileDaemon :: daemon() {
             case FILE_LOADED: {
                 ifstream file(fileName);
                 if (!file.good()) {
-                    mut.lock();
+                    lock_guard<mutex> lock(mut);
                     state = FILE_NONE;
                     meshRef->reset();
-                    mut.unlock();
                     cout << "File " << fileName << " deleted!" << endl;
                 }
             }  break;

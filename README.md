@@ -1,6 +1,6 @@
 # Identidade Expandida - Gráficos
 
-Esse repositório guarda o projeto de código relacionado a parte de renderização da obra "Identidade Expandida", feita em colaboração com Anaísa Franco. Essa parte da obra é feita em C++11, usando a biblioteca [openframeworks.cc](OpenFrameworks) (que serve, dentre outras coisas, como uma camada de abstração para a OpenGL; mesmo que não muito eficiente, ajuda demais a não se preocupar em cuidar da máquina de estado enorme que é a GL).
+Esse repositório guarda o projeto de código relacionado a parte de renderização da obra "Identidade Expandida", feita em colaboração com Anaísa Franco. Essa parte da obra é feita em C++14, usando a biblioteca [openframeworks.cc](OpenFrameworks) (que serve, dentre outras coisas, como uma camada de abstração para a OpenGL; mesmo que não muito eficiente, ajuda demais a não se preocupar em cuidar da máquina de estado enorme que é a GL).
 
 ## Funcionamento
 O aplicativo essencialmente monitora um diretório, procurando por um arquivo que define as curvas de uma digital (cujo nome é uma constante definida em código) gerada pelo componente / projeto *Identidade Expandida - Curvas*, que por sua vez lê um arquivo de imagem gerado pelo *Identidade Expandida - Captura* e o transforma em um arquivo de texto definindo os contornos da digital presente na imagem.
@@ -17,4 +17,4 @@ Classe principal do aplicativo, responsável por coordenar eventos e manter os o
 Classe herdada de `std::vector<ofMesh>`, que cria e gerencia as meshes de cada curva das digitais.
 
 ### - `FileDaemon`
-Classe que monitora o sistema de arquivos assincronamente, garantindo que eventos do sistema de arquivos (criação e deleção de arquivos) sejam repassados à `ofApp`.
+Classe que monitora o sistema de arquivos assincronamente, garantindo que eventos do sistema de arquivos (criação e deleção de arquivos) atualizem a mesh do `ofApp` assincronamente.

@@ -205,7 +205,7 @@ FingerMesh :: FingerMesh(string filePath) {
 			// There's an additional challenge with faces:
 			//  we don't know how many vertices make up
 			//  one, so we have to read it until the end.
-			vector<int> indices;
+			vector<ofIndexType> indices;
 			do {
 				int i;
 				sLine >> i;
@@ -216,11 +216,79 @@ FingerMesh :: FingerMesh(string filePath) {
 			//  the complex polygon and tesselate it
 			//  for us.
 			ofPath path;
-			for (int i : indices) {
+			for (auto i : indices) {
 				path.lineTo(vertices[i].x, .0f, vertices[i].y);
 			}
 			path.tessellate();
-			this->push_back(path.getTessellation());
+            ofMesh mesh = path.getTessellation();
+            
+            // We now have the mesh! But we aren't done.
+            //  There are three things remaining:
+            //
+            // 1 - Identify where the original vertices are
+            //  in the newly tesselated mesh, because the
+            //  triangulation will inevitabily have created
+            //  more vertices and shuffled the old ones around.
+            //
+            // 2 - Duplicate the lower plane into the upper
+            //  plane, to close the mesh.
+            //
+            // 3 - Stitch those vertices together at the edges,
+            //  just like indices[] dictates.
+            
+            
+            vector<ofIndexType> newIndices(indices.size());
+            
+            for (auto x = 0; x < indices.size(); x++) {
+                newIndices[x] = min_element(mesh.getVertices().begin(), mesh.getVertices().end(),
+                    [vertices, x] (ofVec3f a, ofVec3f b) {
+                        ofVec3f ad = a - vertices[x];
+                        ofVec3f bd = b - vertices[x];
+                        return ad.dot(ad) < bd.dot(bd);
+                    }) - mesh.getVertices().begin();
+            }
+            
+            // Duplicating lower and upper vertices...
+            mesh.addVertices(mesh.getVertices());
+            //  and adding a horizontal offset to them.
+            for (auto x = mesh.getVertices().size() / 2; x < mesh.getVertices().size(); x++) {
+                mesh.getVertices()[x].y = 1.0f;
+            }
+            
+            // And now, stitching it all together.
+            //
+            // We'll first stitch the new upper plane,
+            //  which is essentially duplicating the
+            //  old indices array, with the added offset
+            //  of the extra vertices.
+            
+            auto vertsPerPlane = mesh.getIndices().size() / 2;
+            
+            vector<ofIndexType> upperPlaneIdx(mesh.getIndices());
+            for(auto &idx : upperPlaneIdx) {
+                idx += vertsPerPlane;
+            }
+            upperPlaneIdx.push_back(upperPlaneIdx.back());
+            
+            vector<ofIndexType> degenerates(2);
+            degenerates[0] = mesh.getIndices().back();
+            degenerates[1] = upperPlaneIdx.front();
+            mesh.addIndices(degenerates);
+            mesh.addIndices(upperPlaneIdx);
+            
+            // Now, finally the walls between planes.
+            vector<ofIndexType> wallsIdx(2 * (indices.size() + 1) + 1);
+            for (auto x = 0; x < indices.size(); x++) {
+                wallsIdx[2 * x + 1] = newIndices[x];
+                wallsIdx[2 * x + 2] = newIndices[x] + vertsPerPlane;
+            }
+            wallsIdx[0] = wallsIdx[1];
+            mesh.addIndices(wallsIdx);
+            
+            // Finally, for lighting purposes, we'll generate
+            //  some normals for the mesh.
+            
+			this->push_back(mesh);
 		}
     }
     
