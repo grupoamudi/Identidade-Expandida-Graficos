@@ -38,7 +38,7 @@ void ofApp :: draw() {
 	static int x = 0;
     
     if (statsEnabled) {
-        if (daemon->isFileReady()) {
+        if (daemon && daemon->isFileReady()) {
             int numPolys = mesh ? accumulate(mesh->begin(), mesh->end(), 0, [](int acc, ofMesh mesh) { return acc + mesh.getIndices().size() - 6 ;}) : 0;
             string strPolys = "Num. Polys in scene: " + to_string(numPolys) + "\n";
             strPolys += "FPS: " + to_string(ofGetFrameRate()) + "\n";
@@ -56,14 +56,14 @@ void ofApp :: draw() {
     ofTranslate(512 + float(10) * sinf(x / float(30.0)), 384);
     ofScale(5.0f, 5.0f);
     ofRotate(mouseY * (1.0/6.0f), 1, 0, 0);
-    ofRotate(mouseX * (1.0/6.0f), 0, 1, 0);
+    ofRotate((mouseX - 512) * (1.0/6.0f), 0, 1, 0);
     //ofRotate(x * 0.1f, 0, 0, 1);
     uint64_t timeBegin = ofGetSystemTimeMicros();
     
     // We have to first check if the mesh is ready before rendering,
     //  or we might stumble upon cases where this thread is acessing
     //  an incomplete mesh object, therefore crashing the program.
-    if (daemon->isFileReady()){
+    if (daemon && daemon->isFileReady()){
         if (mesh) {
             mesh->draw();
         }

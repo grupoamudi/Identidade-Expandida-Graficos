@@ -142,7 +142,7 @@ FingerMesh :: FingerMesh() {
         
         
         // And we're ready to build our mesh.
-        ofMesh mesh;
+        ofVboMesh mesh;
         mesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
         mesh.addVertices(vertices);
 #ifdef DEBUG_WITH_COLORS
@@ -152,6 +152,7 @@ FingerMesh :: FingerMesh() {
         //mesh.addColors(colors);
 #endif
         mesh.addIndices(indices);
+        mesh.setUsage(GL_DYNAMIC_DRAW);
         
         this->push_back(mesh);
     }
@@ -205,6 +206,7 @@ FingerMesh :: FingerMesh(string filePath) {
 			// There's an additional challenge with faces:
 			//  we don't know how many vertices make up
 			//  one, so we have to read it until the end.
+            // An std::vector is perfect for that.
 			vector<ofIndexType> indices;
 			do {
 				int i;
@@ -212,7 +214,7 @@ FingerMesh :: FingerMesh(string filePath) {
 				indices.push_back(i);
 			} while (!sLine.eof());
             
-			// Now, we use ofPath's facilities to join
+			// Now, we use ofPath's facilities to trace
 			//  the complex polygon and tesselate it
 			//  for us.
 			ofPath path;
@@ -336,9 +338,9 @@ FingerMesh :: FingerMesh(string filePath) {
 }
 
 void FingerMesh :: draw() {
-    for (ofMesh mesh : *this) {
-        mesh.drawWireframe();
-        //mesh.draw();
+    for (auto mesh : *this) {
+        //mesh.drawWireframe();
+        mesh.draw();
     }
 }
 

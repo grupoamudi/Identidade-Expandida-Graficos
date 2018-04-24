@@ -1,14 +1,14 @@
 #include "ofMain.h"
 #include <fstream>
 
-// Windows apparently doesn't ship woth M_PI, so we
+// Windows apparently doesn't ship with M_PI, so we
 //  have to define it ourselves.
 #ifndef M_PI
 	#define M_PI 3.141592f
 #endif
 
 #pragma once
-class FingerMesh : public vector<ofMesh> {
+class FingerMesh : public vector<ofVboMesh> {
 
 public:
 	// Initializes with a default, oval mesh for test purposes.
