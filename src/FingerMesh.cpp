@@ -242,8 +242,8 @@ FingerMesh :: FingerMesh(string filePath) {
             for (auto x = 0; x < indices.size(); x++) {
                 newIndices[x] = min_element(mesh.getVertices().begin(), mesh.getVertices().end(),
                     [vertices, x] (ofVec3f a, ofVec3f b) {
-                        ofVec3f ad = a - vertices[x];
-                        ofVec3f bd = b - vertices[x];
+                        const ofVec3f ad = a - vertices[x];
+                        const ofVec3f bd = b - vertices[x];
                         return ad.dot(ad) < bd.dot(bd);
                     }) - mesh.getVertices().begin();
             }
@@ -287,14 +287,37 @@ FingerMesh :: FingerMesh(string filePath) {
             
             // Finally, for lighting purposes, we'll generate
             //  some normals for the mesh.
+            vector<ofVec3f> normals(mesh.getVertices().size());
+            fill(normals.begin(), normals.end(), ofVec3f(0.0));
+            // Our startegy here is to calculate every possible
+            //  flat-shaded normal and add the contributions
+            //  to every vertex of a given triangle, so in the
+            //  end we just normalize our accumulated vectors,
+            //  and have a very good approximation of the true
+            //  smooth vertex normal.
+            auto const vertRef = mesh.getVertices();
+            auto const idxRef = mesh.getIndices();
+            for (auto x = 0; x < idxRef.size() - 2; x++) {
+                /* const */ ofVec3f v1 = ofVec3f(vertRef[idxRef[x]] - vertRef[idxRef[x + 1]]);
+                const ofVec3f v2 = ofVec3f(vertRef[idxRef[x]] - vertRef[idxRef[x + 2]]);
+                const ofVec3f n = v1.cross(v2);
+                normals[idxRef[x]] += n;
+                normals[idxRef[x + 1]] += n;
+                normals[idxRef[x + 2]] += n;
+            }
+            for (ofVec3f &n : normals) {
+                n.normalize();
+            }
+            mesh.addNormals(normals);
             
+            // And so we can add our mesh to the scene.
 			this->push_back(mesh);
 		}
     }
     
     // Finally, we can find the center of all vertices
     //  and re-center the mesh group.
-    ofVec3f accum(.0f, .0f, .0f);
+    ofVec3f accum(.0f);
     int nVerts = 0;
     for (ofMesh m : *this) {
         for (ofVec3f v : m.getVertices()) {
