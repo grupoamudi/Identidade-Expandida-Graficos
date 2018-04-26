@@ -12,7 +12,8 @@ private:
     shared_ptr<FingerMesh> mesh;
     unique_ptr<FileDaemon> daemon;
     ofLight light;
-    //ofShader shader;
+    ofShader shader;
+    ofImage palette;
     bool statsEnabled = false;
     bool dummyFile = false;
     uint64_t lastFrameTime;

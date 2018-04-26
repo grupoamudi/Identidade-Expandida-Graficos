@@ -12,8 +12,17 @@ void ofApp :: setup() {
     light.setPosition(512, 0, 300);
     light.enable();
     
-    //shader.load("Forward.vert", "Forward.frag");
-    //shader.setUniform3f("lightPos", 0, 0, 300);
+    palette = ofImage("Palette.png");
+    
+    shader.load("FingerShader.vert", "FingerShader.frag");
+    shader.setUniform3f("lightPos", 0, 0, 300);
+    shader.setUniform1f("freq", 0.15f);
+    shader.setUniform1f("power", 1.5f);
+    shader.setUniform1f("ambient", 0.6f);
+    shader.setUniform1f("diffuse", 0.3f);
+    shader.setUniform1f("noisePower", 0.2f);
+    shader.setUniformTexture("palette", palette.getTexture(), 0);
+    
     startupTime = ofGetSystemTime();
     
     daemon = make_unique<FileDaemon>(&this->mesh, "TestObj.obj");
@@ -22,15 +31,17 @@ void ofApp :: setup() {
 
 //--------------------------------------------------------------
 void ofApp :: update() {
-    
     // Animation part
-    if (mesh) {
+    /*if (mesh) {
         const float phase = M_PI * (ofGetSystemTime() % 2048) / 1024.0f;
         const float offset = M_PI * 0.15f;
         for (int x = 0; x < mesh->size(); x++) {
             mesh->setHeight(x, 1.0f + 3.0f * powf((1.0f + cosf(phase - offset * x)) * 0.5f, 1.5));
         }
-    }
+    }*/
+    // The animation is completely handled by the shaders, so
+    //  we just set the "time" parameter and are good to go.
+    shader.setUniform1f("time", (ofGetSystemTime() % 2048) / 1024.0f);
 }
 
 //--------------------------------------------------------------

@@ -1,3 +1,4 @@
+#version 130
 // Wave parameters are all defined as inputs
 //  for the vertex shader.
 uniform float time, freq, power;
