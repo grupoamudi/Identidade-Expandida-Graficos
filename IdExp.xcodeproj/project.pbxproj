@@ -52,6 +52,9 @@
 		2F6FD2B0208BC6490024A988 /* TestObj.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = TestObj.obj; path = src/TestObj.obj; sourceTree = "<group>"; };
 		2FCBC63D2068655D00B1E44D /* FingerMesh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FingerMesh.cpp; sourceTree = "<group>"; };
 		2FCBC63E2068655D00B1E44D /* FingerMesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FingerMesh.h; sourceTree = "<group>"; };
+		2FD127C120910CD8002DF86C /* FingerShader.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = FingerShader.frag; sourceTree = "<group>"; };
+		2FD127C220910CD8002DF86C /* FingerShader.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = FingerShader.vert; sourceTree = "<group>"; };
+		2FD127C320910CD8002DF86C /* Palette.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Palette.png; sourceTree = "<group>"; };
 		E4328143138ABC890047C5CB /* openFrameworksLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = openFrameworksLib.xcodeproj; path = ../../../Downloads/of_v0.9.8_osx_release/libs/openFrameworksCompiled/project/osx/openFrameworksLib.xcodeproj; sourceTree = SOURCE_ROOT; };
 		E4B69B5B0A3A1756003C02F2 /* IdExpDebug.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IdExpDebug.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E4B69E1D0A3A1BDC003C02F2 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = src/main.cpp; sourceTree = SOURCE_ROOT; };
@@ -114,6 +117,9 @@
 		E4B69E1C0A3A1BDC003C02F2 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				2FD127C120910CD8002DF86C /* FingerShader.frag */,
+				2FD127C220910CD8002DF86C /* FingerShader.vert */,
+				2FD127C320910CD8002DF86C /* Palette.png */,
 				2FCBC63D2068655D00B1E44D /* FingerMesh.cpp */,
 				2FCBC63E2068655D00B1E44D /* FingerMesh.h */,
 				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
