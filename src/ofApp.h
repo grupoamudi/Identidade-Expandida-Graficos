@@ -11,7 +11,8 @@ class ofApp : public ofBaseApp {
 private:
     shared_ptr<FingerMesh> mesh;
     unique_ptr<FileDaemon> daemon;
-    ofLight light;
+    //ofLight light;
+    ofVec3f lightPos;
     ofShader shader;
     ofImage palette;
     bool statsEnabled = false;

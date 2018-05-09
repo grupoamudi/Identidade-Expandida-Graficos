@@ -1,6 +1,6 @@
 #include "FingerMesh.h"
 
-#define DEBUG_WITH_COLORS
+//#define DEBUG_WITH_COLORS
 
 // The default constructor makes concentric rings whose
 //  shape vaguely resembles a fingerprint. The idea is
@@ -321,8 +321,8 @@ FingerMesh :: FingerMesh(string filePath) {
     //  and re-center the mesh group.
     ofVec3f accum(.0f);
     int nVerts = 0;
-    for (ofMesh m : *this) {
-        for (ofVec3f v : m.getVertices()) {
+    for (ofMesh &m : *this) {
+        for (ofVec3f &v : m.getVertices()) {
             accum += v;
             nVerts++;
         }
@@ -330,19 +330,39 @@ FingerMesh :: FingerMesh(string filePath) {
     
     accum /= float(nVerts);
     
-    for (ofMesh m : *this) {
-        for (ofVec3f v : m.getVertices()) {
+    for (ofMesh &m : *this) {
+        for (ofVec3f &v : m.getVertices()) {
             v -= accum;
         }
     }
 }
 
+/*
+ I wish I could do simply this. I really wish I could.
+ 
 void FingerMesh :: draw() {
     for (auto mesh : *this) {
-        //mesh.drawWireframe();
         mesh.draw();
     }
 }
+ 
+ But the compiler will turn that into a copy constructor,
+  and copy and destroy objects all over the place, making
+  it a very inefficient way of drawing. We have to use
+  raw loops, instead - it saves 20x as much CPU time.
+*/
+
+/* OpenGL 2.0 way */
+void FingerMesh :: draw() {
+    for (auto x = 0; x < this->size(); x++) {
+        float height = this->at(x).getVertices().back().z;
+        ofColor c;
+        c.setHsb(80 + height * 15, 80 + height * 30, 200);
+        ofSetColor(c.r, c.g, c.b);
+        this->at(x).draw();
+    }
+}
+
 
 void FingerMesh :: drawWithNormalColors() {
     for (ofMesh mesh : *this) {

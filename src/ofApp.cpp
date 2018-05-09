@@ -3,30 +3,25 @@
 //--------------------------------------------------------------
 void ofApp :: setup() {
 	ofSetVerticalSync(true);
+    ofBackground(0, 0, 0);
+    ofSetFrameRate(60);
     ofEnableDepthTest();
-	ofEnableLighting();
+    ofDisableArbTex();
     
-    light.setPointLight();
+    /*light.setPointLight();
     light.setAmbientColor(0.2f);
     light.setDiffuseColor(0.6f);
     light.setPosition(512, 0, 300);
-    light.enable();
+    light.enable();*/
     
     palette = ofImage("Palette.png");
     
     shader.load("FingerShader.vert", "FingerShader.frag");
-    shader.setUniform3f("lightPos", 0, 0, 300);
-    shader.setUniform1f("freq", 0.15f);
-    shader.setUniform1f("power", 1.5f);
-    shader.setUniform1f("ambient", 0.6f);
-    shader.setUniform1f("diffuse", 0.3f);
-    shader.setUniform1f("noisePower", 0.2f);
-    shader.setUniformTexture("palette", palette.getTexture(), 0);
     
     startupTime = ofGetSystemTime();
     
-    daemon = make_unique<FileDaemon>(&this->mesh, "TestObj.obj");
-    //mesh = make_shared<FingerMesh>();
+    //daemon = make_unique<FileDaemon>(&this->mesh, "TestObj.obj");
+    mesh = make_shared<FingerMesh>();
 }
 
 //--------------------------------------------------------------
@@ -39,9 +34,6 @@ void ofApp :: update() {
             mesh->setHeight(x, 1.0f + 3.0f * powf((1.0f + cosf(phase - offset * x)) * 0.5f, 1.5));
         }
     }*/
-    // The animation is completely handled by the shaders, so
-    //  we just set the "time" parameter and are good to go.
-    shader.setUniform1f("time", (ofGetSystemTime() % 2048) / 1024.0f);
 }
 
 //--------------------------------------------------------------
@@ -49,7 +41,7 @@ void ofApp :: draw() {
 	static int x = 0;
     
     if (statsEnabled) {
-        if (daemon && daemon->isFileReady()) {
+        //if (daemon && daemon->isFileReady()) {
             int numPolys = mesh ? accumulate(mesh->begin(), mesh->end(), 0, [](int acc, ofMesh mesh) { return acc + mesh.getIndices().size() - 6 ;}) : 0;
             string strPolys = "Num. Polys in scene: " + to_string(numPolys) + "\n";
             strPolys += "FPS: " + to_string(ofGetFrameRate()) + "\n";
@@ -57,15 +49,15 @@ void ofApp :: draw() {
             strPolys += to_string(lastFrameTime * .006f) + " %";
             
             ofDrawBitmapStringHighlight(strPolys, 10, 20);
-        }
-        else {
-            ofDrawBitmapStringHighlight("No model currently loaded.", 10, 20);
-        }
+        //}
+        //else {
+        //    ofDrawBitmapStringHighlight("No model currently loaded.", 10, 20);
+        //}
     }
     
     ofPushMatrix();
-    ofTranslate(512 + float(10) * sinf(x / float(30.0)), 384);
-    ofScale(5.0f, 5.0f);
+    ofTranslate(512 + float(10) * sinf(x / float(30.0)), 484);
+    ofScale(35.0f, 35.0f);
     ofRotate(mouseY * (1.0/6.0f), 1, 0, 0);
     ofRotate((mouseX - 512) * (1.0/6.0f), 0, 1, 0);
     //ofRotate(x * 0.1f, 0, 0, 1);
@@ -74,11 +66,40 @@ void ofApp :: draw() {
     // We have to first check if the mesh is ready before rendering,
     //  or we might stumble upon cases where this thread is acessing
     //  an incomplete mesh object, therefore crashing the program.
-    if (daemon && daemon->isFileReady()){
+    //if (daemon && daemon->isFileReady()){
         if (mesh) {
-            mesh->draw();
+            shader.begin();
+            shader.setUniform3f("lightPosition", lightPos.x, lightPos.y, lightPos.z);
+            shader.setUniform1f("ambient", .1f);
+            shader.setUniform1f("diffuse", .9f);
+            shader.setUniform1f("noisePower", 0.3f);
+            //shader.setUniform1f("offset", 1.0f);
+            shader.setUniformTexture("palette", palette.getTexture(), 0);
+            shader.setUniform1f("time", (ofGetSystemTime() % 2048) / 512.0f);
+            
+            // Great for debugging!
+            //ofIcoSpherePrimitive(10.0, 0).draw();
+            
+            const float phase = M_PI * (ofGetSystemTime() % 2048) / 1024.0f;
+            const float offset = M_PI * 0.15f;
+            
+            // I would really like to send a simple "draw()"
+            //  command to FingerMesh and have it draw all
+            //  finger segments. The problem is, the Finger
+            //  mesh isn't aware of the shader and so cannot
+            //  set the transform values. 
+            for (int x = 0; x < mesh->size(); x++) {
+                
+                const float wave = 1.0f + 3.0f * powf((1.0f + cosf(phase - offset * x)) * 0.5f, 1.5);
+                shader.setUniform1f("offset", wave);
+                mesh->at(x).draw();
+            }
+            
+            
+            shader.end();
         }
-    }
+    //}
+    glFlush();
     lastFrameTime = ofGetSystemTimeMicros() - timeBegin;
     ofPopMatrix();
     
@@ -110,8 +131,13 @@ void ofApp :: keyReleased(int key) {
 //--------------------------------------------------------------
 void ofApp :: mouseMoved(int x, int y ) {
     //light.setPosition(x, y, 300);
-    mouseX = x;
-    mouseY = y;
+    
+    lightPos.x = x;
+    lightPos.y = y;
+    lightPos.z = -30;
+    
+    //mouseX = x;
+    //mouseY = y;
 }
 
 //--------------------------------------------------------------

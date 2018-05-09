@@ -9,7 +9,6 @@
 
 #pragma once
 class FingerMesh : public vector<ofVboMesh> {
-
 public:
 	// Initializes with a default, oval mesh for test purposes.
     FingerMesh();

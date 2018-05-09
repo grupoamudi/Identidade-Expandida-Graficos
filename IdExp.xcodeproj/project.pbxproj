@@ -8,11 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2F6FD2AF208A5F340024A988 /* FileDaemon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2F6FD2AD208A5F340024A988 /* FileDaemon.cpp */; };
-		2F6FD2B1208BC64C0024A988 /* TestObj.obj in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2F6FD2B0208BC6490024A988 /* TestObj.obj */; };
 		2FCBC63F2068655D00B1E44D /* FingerMesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2FCBC63D2068655D00B1E44D /* FingerMesh.cpp */; };
-		2FD127C420926B97002DF86C /* FingerShader.frag in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2FD127C120910CD8002DF86C /* FingerShader.frag */; };
-		2FD127C520926B98002DF86C /* FingerShader.vert in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2FD127C220910CD8002DF86C /* FingerShader.vert */; };
-		2FD127C620926B9C002DF86C /* Palette.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2FD127C320910CD8002DF86C /* Palette.png */; };
 		E4328149138ABC9F0047C5CB /* openFrameworksDebug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E4328148138ABC890047C5CB /* openFrameworksDebug.a */; };
 		E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B69E1D0A3A1BDC003C02F2 /* main.cpp */; };
 		E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */; };
@@ -42,10 +38,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 7;
 			files = (
-				2F6FD2B1208BC64C0024A988 /* TestObj.obj in CopyFiles */,
-				2FD127C420926B97002DF86C /* FingerShader.frag in CopyFiles */,
-				2FD127C520926B98002DF86C /* FingerShader.vert in CopyFiles */,
-				2FD127C620926B9C002DF86C /* Palette.png in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -55,12 +47,12 @@
 		2F6FD2AB2087AE350024A988 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		2F6FD2AD208A5F340024A988 /* FileDaemon.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FileDaemon.cpp; sourceTree = "<group>"; };
 		2F6FD2AE208A5F340024A988 /* FileDaemon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FileDaemon.h; sourceTree = "<group>"; };
-		2F6FD2B0208BC6490024A988 /* TestObj.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = TestObj.obj; path = src/TestObj.obj; sourceTree = "<group>"; };
 		2FCBC63D2068655D00B1E44D /* FingerMesh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FingerMesh.cpp; sourceTree = "<group>"; };
 		2FCBC63E2068655D00B1E44D /* FingerMesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FingerMesh.h; sourceTree = "<group>"; };
-		2FD127C120910CD8002DF86C /* FingerShader.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = FingerShader.frag; sourceTree = "<group>"; };
-		2FD127C220910CD8002DF86C /* FingerShader.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = FingerShader.vert; sourceTree = "<group>"; };
-		2FD127C320910CD8002DF86C /* Palette.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Palette.png; sourceTree = "<group>"; };
+		2FE56BD0209C8F3900D03306 /* Palette.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Palette.png; path = bin/data/Palette.png; sourceTree = SOURCE_ROOT; };
+		2FE56BD1209C8F3900D03306 /* TestObj.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TestObj.obj; sourceTree = SOURCE_ROOT; };
+		2FE56BD2209C8F3900D03306 /* FingerShader.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = FingerShader.vert; path = bin/data/FingerShader.vert; sourceTree = SOURCE_ROOT; };
+		2FE56BD3209C8F3900D03306 /* FingerShader.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = FingerShader.frag; path = bin/data/FingerShader.frag; sourceTree = SOURCE_ROOT; };
 		E4328143138ABC890047C5CB /* openFrameworksLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = openFrameworksLib.xcodeproj; path = ../../../Downloads/of_v0.9.8_osx_release/libs/openFrameworksCompiled/project/osx/openFrameworksLib.xcodeproj; sourceTree = SOURCE_ROOT; };
 		E4B69B5B0A3A1756003C02F2 /* IdExpDebug.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IdExpDebug.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E4B69E1D0A3A1BDC003C02F2 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = src/main.cpp; sourceTree = SOURCE_ROOT; };
@@ -108,7 +100,7 @@
 		E4B69B4A0A3A1720003C02F2 = {
 			isa = PBXGroup;
 			children = (
-				2F6FD2B0208BC6490024A988 /* TestObj.obj */,
+				2FE56BD1209C8F3900D03306 /* TestObj.obj */,
 				2F6FD2AB2087AE350024A988 /* README.md */,
 				E4B6FCAD0C3E899E008CF71C /* openFrameworks-Info.plist */,
 				E4EB6923138AFD0F00A09F29 /* Project.xcconfig */,
@@ -123,9 +115,9 @@
 		E4B69E1C0A3A1BDC003C02F2 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				2FD127C120910CD8002DF86C /* FingerShader.frag */,
-				2FD127C220910CD8002DF86C /* FingerShader.vert */,
-				2FD127C320910CD8002DF86C /* Palette.png */,
+				2FE56BD3209C8F3900D03306 /* FingerShader.frag */,
+				2FE56BD2209C8F3900D03306 /* FingerShader.vert */,
+				2FE56BD0209C8F3900D03306 /* Palette.png */,
 				2FCBC63D2068655D00B1E44D /* FingerMesh.cpp */,
 				2FCBC63E2068655D00B1E44D /* FingerMesh.h */,
 				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
@@ -174,7 +166,7 @@
 		E4B69B4C0A3A1720003C02F2 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0920;
+				LastUpgradeCheck = 0930;
 			};
 			buildConfigurationList = E4B69B4D0A3A1720003C02F2 /* Build configuration list for PBXProject "IdExp" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -256,33 +248,41 @@
 			baseConfigurationReference = E4EB6923138AFD0F00A09F29 /* Project.xcconfig */;
 			buildSettings = {
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_CXX0X_EXTENSIONS = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CLANG_X86_VECTOR_INSTRUCTIONS = avx;
 				CONFIGURATION_BUILD_DIR = "$(SRCROOT)/bin/";
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
+				D_LIBCPP_ENABLE_CXX17_REMOVED_AUTO_PTR = "";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_AUTO_VECTORIZATION = YES;
 				GCC_ENABLE_SSE3_EXTENSIONS = YES;
 				GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS = YES;
+				GCC_FAST_MATH = YES;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = BOOST_NO_AUTO_PTR;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = YES;
@@ -311,32 +311,42 @@
 			baseConfigurationReference = E4EB6923138AFD0F00A09F29 /* Project.xcconfig */;
 			buildSettings = {
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_CXX0X_EXTENSIONS = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CLANG_X86_VECTOR_INSTRUCTIONS = avx;
 				CONFIGURATION_BUILD_DIR = "$(SRCROOT)/bin/";
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
+				D_LIBCPP_ENABLE_CXX17_REMOVED_AUTO_PTR = "";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_AUTO_VECTORIZATION = YES;
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				GCC_ENABLE_CPP_RTTI = NO;
 				GCC_ENABLE_SSE3_EXTENSIONS = YES;
 				GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS = YES;
+				GCC_FAST_MATH = YES;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PREPROCESSOR_DEFINITIONS = BOOST_NO_AUTO_PTR;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_UNROLL_LOOPS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -354,7 +364,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				OTHER_CPLUSPLUSFLAGS = (
 					"-D__MACOSX_CORE__",
-					"-mtune=native",
+					"-mtune=corei7-avx",
 				);
 				SDKROOT = macosx;
 			};
@@ -366,6 +376,7 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -393,6 +404,7 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
