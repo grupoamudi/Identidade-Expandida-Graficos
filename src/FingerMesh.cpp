@@ -156,6 +156,8 @@ FingerMesh :: FingerMesh() {
         
         this->push_back(mesh);
     }
+    
+    creationTime = ofGetSystemTime();
 }
 
 FingerMesh :: FingerMesh(string filePath) {
@@ -291,6 +293,7 @@ FingerMesh :: FingerMesh(string filePath) {
             //  some normals for the mesh.
             vector<ofVec3f> normals(mesh.getVertices().size());
             fill(normals.begin(), normals.end(), ofVec3f(0.0));
+            
             // Our startegy here is to calculate every possible
             //  flat-shaded normal and add the contributions
             //  to every vertex of a given triangle, so in the
@@ -335,6 +338,8 @@ FingerMesh :: FingerMesh(string filePath) {
             v -= accum;
         }
     }
+    
+    creationTime = ofGetSystemTime();
 }
 
 /*
@@ -359,6 +364,14 @@ void FingerMesh :: draw() {
         ofColor c;
         c.setHsb(80 + height * 15, 80 + height * 30, 200);
         ofSetColor(c.r, c.g, c.b);
+        this->at(x).draw();
+    }
+}
+
+/* OpenGL 3.0 way */
+void FingerMesh::draw(function<void(int)> fun, size_t segments) {
+    for (auto x = 0; x < min(this->size(), segments); x++) {
+        fun(x);
         this->at(x).draw();
     }
 }

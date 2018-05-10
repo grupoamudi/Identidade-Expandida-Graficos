@@ -10,6 +10,7 @@
 #pragma once
 class FingerMesh : public vector<ofVboMesh> {
 public:
+    uint64_t creationTime;
 	// Initializes with a default, oval mesh for test purposes.
     FingerMesh();
 	// Loads from a file, which should be default behavior.
@@ -19,6 +20,7 @@ public:
 	void setHeight(const vector<float> heights);
     
     void draw();
+    void draw(function<void(int)> fun, size_t segments);
     void drawWithNormalColors();
     
     // Since we don't ever use the new() operator, the default

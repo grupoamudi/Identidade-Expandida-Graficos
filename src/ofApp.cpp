@@ -42,7 +42,7 @@ void ofApp :: draw() {
     
     if (statsEnabled) {
         //if (daemon && daemon->isFileReady()) {
-            int numPolys = mesh ? accumulate(mesh->begin(), mesh->end(), 0, [](int acc, ofMesh mesh) { return acc + mesh.getIndices().size() - 6 ;}) : 0;
+            const int numPolys = mesh ? accumulate(mesh->begin(), mesh->end(), 0, [](int acc, ofMesh mesh) { return acc + mesh.getIndices().size() - 6 ;}) : 0;
             string strPolys = "Num. Polys in scene: " + to_string(numPolys) + "\n";
             strPolys += "FPS: " + to_string(ofGetFrameRate()) + "\n";
             strPolys += "GPU load: ";
@@ -61,7 +61,7 @@ void ofApp :: draw() {
     ofRotate(mouseY * (1.0/6.0f), 1, 0, 0);
     ofRotate((mouseX - 512) * (1.0/6.0f), 0, 1, 0);
     //ofRotate(x * 0.1f, 0, 0, 1);
-    uint64_t timeBegin = ofGetSystemTimeMicros();
+    const uint64_t timeBegin = ofGetSystemTimeMicros();
     
     // We have to first check if the mesh is ready before rendering,
     //  or we might stumble upon cases where this thread is acessing
@@ -73,7 +73,6 @@ void ofApp :: draw() {
             shader.setUniform1f("ambient", .1f);
             shader.setUniform1f("diffuse", .9f);
             shader.setUniform1f("noisePower", 0.3f);
-            //shader.setUniform1f("offset", 1.0f);
             shader.setUniformTexture("palette", palette.getTexture(), 0);
             shader.setUniform1f("time", (ofGetSystemTime() % 2048) / 512.0f);
             
@@ -83,23 +82,17 @@ void ofApp :: draw() {
             const float phase = M_PI * (ofGetSystemTime() % 2048) / 1024.0f;
             const float offset = M_PI * 0.15f;
             
-            // I would really like to send a simple "draw()"
-            //  command to FingerMesh and have it draw all
-            //  finger segments. The problem is, the Finger
-            //  mesh isn't aware of the shader and so cannot
-            //  set the transform values. 
-            for (int x = 0; x < mesh->size(); x++) {
-                
-                const float wave = 1.0f + 3.0f * powf((1.0f + cosf(phase - offset * x)) * 0.5f, 1.5);
-                shader.setUniform1f("offset", wave);
-                mesh->at(x).draw();
-            }
+            const auto timeElapsed = ofGetSystemTime() - mesh->creationTime;
             
+            mesh->draw([&shader = shader, phase, offset, timeElapsed] (int x) {
+                const float wave = (1.0f + 3.0f * powf((1.0f + cosf(phase - offset * x)) * 0.5f, 1.5)) * (1.0  + tanh((timeElapsed * .0005f) - (x + 1) * 1.5f)) * 0.5;
+                shader.setUniform1f("offset", wave);
+            }, timeElapsed / 500);
             
             shader.end();
         }
     //}
-    glFlush();
+    //glFlush();
     lastFrameTime = ofGetSystemTimeMicros() - timeBegin;
     ofPopMatrix();
     
