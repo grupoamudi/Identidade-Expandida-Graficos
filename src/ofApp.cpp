@@ -1,4 +1,5 @@
 #include "ofApp.h"
+//#define DEBUG_MODE
 
 //--------------------------------------------------------------
 void ofApp :: setup() {
@@ -20,8 +21,11 @@ void ofApp :: setup() {
     
     startupTime = ofGetSystemTime();
     
-    //daemon = make_unique<FileDaemon>(&this->mesh, "TestObj.obj");
+#ifdef DEBUG_MODE
     mesh = make_shared<FingerMesh>();
+#else
+    daemon = make_unique<FileDaemon>(&this->mesh, "currentFingerprint.obj");
+#endif
 }
 
 //--------------------------------------------------------------
@@ -32,7 +36,9 @@ void ofApp :: draw() {
 	static int x = 0;
     
     if (statsEnabled) {
-        //if (daemon && daemon->isFileReady()) {
+#ifndef DEBUG_MODE
+        if (daemon && daemon->isFileReady()) {
+#endif
             const int numPolys = mesh ? accumulate(mesh->begin(), mesh->end(), 0, [](int acc, ofMesh mesh) { return acc + mesh.getIndices().size() - 6 ;}) : 0;
             string strPolys = "Num. Polys in scene: " + to_string(numPolys) + "\n";
             strPolys += "FPS: " + to_string(ofGetFrameRate()) + "\n";
@@ -40,26 +46,31 @@ void ofApp :: draw() {
             strPolys += to_string(lastFrameTime * .006f) + " %";
             
             ofDrawBitmapStringHighlight(strPolys, 10, 20);
-        //}
-        //else {
-        //    ofDrawBitmapStringHighlight("No model currently loaded.", 10, 20);
-        //}
+#ifndef DEBUG_MODE
+        }
+        else {
+            ofDrawBitmapStringHighlight("No model currently loaded.", 10, 20);
+        }
+#endif
     }
     
-    ofPushMatrix();
-    ofTranslate(512 + float(10) * sinf(x / float(30.0)), 484);
-    ofScale(0.7f * ofGetWindowHeight() / mesh->maxElement, 0.7f * ofGetWindowHeight() / mesh->maxElement);
-    //ofScale(35.0f, 35.0f);
-    ofRotate(mouseY * (1.0/6.0f), 1, 0, 0);
-    ofRotate((mouseX - 512) * (1.0/6.0f), 0, 1, 0);
     //ofRotate(x * 0.1f, 0, 0, 1);
     const uint64_t timeBegin = ofGetSystemTimeMicros();
     
     // We have to first check if the mesh is ready before rendering,
     //  or we might stumble upon cases where this thread is acessing
     //  an incomplete mesh object, therefore crashing the program.
-    //if (daemon && daemon->isFileReady()){
+#ifndef DEBUG_MODE
+    if (daemon && daemon->isFileReady()){
+#endif
         if (mesh) {
+            ofPushMatrix();
+            ofTranslate(512 + float(10) * sinf(x / float(30.0)), 484);
+            ofScale(0.7f * ofGetWindowHeight() / mesh->maxElement, 0.7f * ofGetWindowHeight() / mesh->maxElement);
+            //ofScale(35.0f, 35.0f);
+            ofRotate(mouseY * (1.0/6.0f), 1, 0, 0);
+            ofRotate((mouseX - 512) * (1.0/6.0f), 0, 1, 0);
+            
             shader.begin();
             shader.setUniform3f("lightPosition", lightPos.x, lightPos.y, lightPos.z);
             shader.setUniform1f("ambient", .1f);
@@ -82,11 +93,14 @@ void ofApp :: draw() {
             }, timeElapsed / 500);
             
             shader.end();
+            ofPopMatrix();
         }
-    //}
+#ifndef DEBUG_MODE
+    }
+#endif
     //glFlush();
     lastFrameTime = ofGetSystemTimeMicros() - timeBegin;
-    ofPopMatrix();
+    
     
 	x++;
 }

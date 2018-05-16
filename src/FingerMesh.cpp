@@ -176,17 +176,18 @@ FingerMesh :: FingerMesh(string filePath) {
     // First, we read the vertices and store them into
     //  a single vector, to later assembly the meshes.
     vector<ofVec3f> vertices;
+    vertices.reserve(131072);
     while (!file.eof()) {
-        char line[256];
+        char line[65536];
         do {
-            file.getline(line, 256);
+            file.getline(line, 65536);
         } while((line[0] != 'v' || line[1] != ' ') && !file.eof());
 		if (!file.eof()) {
 			stringstream sLine(line);
 			char c;
 			float x, y;
 			sLine >> c >> x >> y;
-			vertices.push_back(ofVec3f(x, y, .0f));
+			vertices.push_back(ofVec3f(x, .0f, y));
 		}
     }
     
@@ -198,9 +199,9 @@ FingerMesh :: FingerMesh(string filePath) {
 
     
     while (!file.eof()) {
-        char line[256];
+        char line[65536];
         do {
-            file.getline(line, 256);
+            file.getline(line, 65536);
         } while((line[0] != 'f' || line[1] != ' ') && !file.eof());
 		if (!file.eof()) {
 			stringstream sLine(line);
@@ -211,21 +212,30 @@ FingerMesh :: FingerMesh(string filePath) {
 			//  one, so we have to read it until the end.
             // An std::vector is perfect for that.
 			vector<ofIndexType> indices;
+            indices.reserve(1024);
 			do {
 				int i;
 				sLine >> i;
-				indices.push_back(i);
+                // Since OBJ indices are 1-based instead of
+                //  0-based, we have to offset them as we
+                //  load them.
+				indices.push_back(i - 1);
 			} while (!sLine.eof());
+            indices.pop_back();
             
 			// Now, we use ofPath's facilities to trace
 			//  the complex polygon and tesselate it
 			//  for us.
 			ofPath path;
-			for (auto i : indices) {
-				path.lineTo(vertices[i].x, .0f, vertices[i].y);
+			for (auto const &i : indices) {
+				path.lineTo(vertices[i].x, .0f, vertices[i].z);
 			}
+            // Paths are also no enclosed in the OBJ, so we
+            //  close them ourselves.
+            path.lineTo(vertices[0].x, .0f, vertices[0].z);
 			path.tessellate();
             ofMesh mesh = path.getTessellation();
+            auto const vertsPerPlane = mesh.getVertices().size();
             
             // We now have the mesh! But we aren't done.
             //  There are three things remaining:
@@ -241,13 +251,12 @@ FingerMesh :: FingerMesh(string filePath) {
             // 3 - Stitch those vertices together at the edges,
             //  just like indices[] dictates.
             
-            
             vector<ofIndexType> newIndices(indices.size());
             
             for (auto x = 0; x < indices.size(); x++) {
                 ofVec3f const anchorVertex = vertices[indices[x]];
                 newIndices[x] = min_element(mesh.getVertices().begin(), mesh.getVertices().end(),
-                    [&anchorVertex] (ofVec3f a, ofVec3f b) {
+                    [&anchorVertex] (ofVec3f const &a, ofVec3f const &b) {
                         const ofVec3f ad = a - anchorVertex;
                         const ofVec3f bd = b - anchorVertex;
                         return ad.dot(ad) < bd.dot(bd);
@@ -268,31 +277,33 @@ FingerMesh :: FingerMesh(string filePath) {
             //  old indices array, with the added offset
             //  of the extra vertices.
             
-            auto const vertsPerPlane = mesh.getIndices().size() / 2;
+            //TODO: Modify to account for GL_TRIANGLES,
+            //  instead of GL_TRIANGLE_STRIP
             
             vector<ofIndexType> upperPlaneIdx(mesh.getIndices());
             for(auto &idx : upperPlaneIdx) {
                 idx += vertsPerPlane;
             }
-            upperPlaneIdx.push_back(upperPlaneIdx.back());
             
-            vector<ofIndexType> degenerates(2);
-            degenerates[0] = mesh.getIndices().back();
-            degenerates[1] = upperPlaneIdx.front();
-            mesh.addIndices(degenerates);
             mesh.addIndices(upperPlaneIdx);
             
             // Now, finally the walls between planes.
-            vector<ofIndexType> wallsIdx(2 * (indices.size() + 1) + 1);
-            for (auto x = 0; x < indices.size(); x++) {
-                wallsIdx[2 * x + 1] = newIndices[x];
-                wallsIdx[2 * x + 2] = newIndices[x] + vertsPerPlane;
+            vector<ofIndexType> wallsIdx(6 * newIndices.size());
+            for (auto x = 0; x < newIndices.size(); x++) {
+                wallsIdx[6 * x] = newIndices[x];
+                wallsIdx[6 * x + 1] = newIndices[x] + vertsPerPlane;
+                wallsIdx[6 * x + 2] = newIndices[(x + 1) % newIndices.size()];
+                wallsIdx[6 * x + 3] = newIndices[x] + vertsPerPlane;
+                wallsIdx[6 * x + 4] = newIndices[(x + 1) % newIndices.size()];
+                wallsIdx[6 * x + 5] = newIndices[(x + 1) % newIndices.size()] + vertsPerPlane;
             }
-            wallsIdx[0] = wallsIdx[1];
             mesh.addIndices(wallsIdx);
+            
             
             // Finally, for lighting purposes, we'll generate
             //  some normals for the mesh.
+            //TODO: TRIANGLES instead of TRIANGLE_STRIPs.
+            
             vector<ofVec3f> normals(mesh.getVertices().size());
             fill(normals.begin(), normals.end(), ofVec3f(0.0));
             
@@ -304,13 +315,13 @@ FingerMesh :: FingerMesh(string filePath) {
             //  smooth vertex normal.
             auto const &vertRef = mesh.getVertices();
             auto const &idxRef = mesh.getIndices();
-            for (auto x = 0; x < idxRef.size() - 2; x++) {
-                /* const */ ofVec3f v1 = ofVec3f(vertRef[idxRef[x]] - vertRef[idxRef[x + 1]]);
-                const ofVec3f v2 = ofVec3f(vertRef[idxRef[x]] - vertRef[idxRef[x + 2]]);
+            for (auto x = 0; x < idxRef.size() / 3; x++) {
+                ofVec3f v1 = ofVec3f(vertRef[idxRef[3 * x]] - vertRef[idxRef[3 * x + 1]]);
+                const ofVec3f v2 = ofVec3f(vertRef[idxRef[3 * x]] - vertRef[idxRef[3 * x + 2]]);
                 const ofVec3f n = v1.cross(v2);
-                normals[idxRef[x]] += n;
-                normals[idxRef[x + 1]] += n;
-                normals[idxRef[x + 2]] += n;
+                normals[idxRef[3 * x]] += n;
+                normals[idxRef[3 * x + 1]] += n;
+                normals[idxRef[3 * x + 2]] += n;
             }
             for (ofVec3f &n : normals) {
                 n.normalize();
