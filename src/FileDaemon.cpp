@@ -25,6 +25,9 @@ void FileDaemon :: daemon() {
     //  admittedly more convoluted.
     while (1) {
         {
+            if (isDestroying == true) {
+                return;
+            }
             lock_guard<mutex> lock(mut);
             if (isDestroying == true) {
                 return;
