@@ -3,22 +3,21 @@
 
 //--------------------------------------------------------------
 void ofApp :: setup() {
+    ofSetupScreenPerspective(ofGetWidth(), ofGetHeight(), 16.0f, 0.1f, 2000.0f);
 	ofSetVerticalSync(true);
     ofBackground(0, 0, 0);
     ofSetFrameRate(60);
     ofEnableDepthTest();
     ofDisableArbTex();
     
-    /*light.setPointLight();
-    light.setAmbientColor(0.2f);
-    light.setDiffuseColor(0.6f);
-    light.setPosition(512, 0, 300);
-    light.enable();*/
+    // Amazingly, OF doesn't turn face culling on by default.
+    // Realizing this unearthed a lot of problems with my
+    //  custom geometry code.
+    //glEnable(GL_CULL_FACE);
+    //glCullFace(GL_BACK);
     
     palette = ofImage("Palette.png");
-    
     shader.load("FingerShader.vert", "FingerShader.frag");
-    
     startupTime = ofGetSystemTime();
     
 #ifdef DEBUG_MODE
@@ -39,7 +38,7 @@ void ofApp :: draw() {
 #ifndef DEBUG_MODE
         if (daemon && daemon->isFileReady()) {
 #endif
-            const int numPolys = mesh ? accumulate(mesh->begin(), mesh->end(), 0, [](int acc, ofMesh mesh) { return acc + mesh.getIndices().size() - 6 ;}) : 0;
+            const int numPolys = mesh ? accumulate(mesh->begin(), mesh->end(), 0, [](int acc, ofMesh mesh) { return acc + mesh.getIndices().size() / 3 ;}) : 0;
             string strPolys = "Num. Polys in scene: " + to_string(numPolys) + "\n";
             strPolys += "FPS: " + to_string(ofGetFrameRate()) + "\n";
             strPolys += "GPU load: ";
@@ -65,11 +64,15 @@ void ofApp :: draw() {
 #endif
         if (mesh) {
             ofPushMatrix();
-            ofTranslate(512 + float(10) * sinf(x / float(30.0)), 484);
-            ofScale(0.7f * ofGetWindowHeight() / mesh->maxElement, 0.7f * ofGetWindowHeight() / mesh->maxElement);
+            ofTranslate(ofGetWidth() * 0.5f /*+ float(10) * sinf(x / float(30.0))*/, ofGetHeight() * 0.2f, -1.8f * ofGetHeight());
+            //ofTranslate(.0f, .0f, -ofGetHeight());
+            
+            ofRotate(180.0f, 0, 0, 1);
+            ofRotate(-45.0f, 1, 0, 0);
+            
+            ofScale(1.5f * ofGetHeight() / mesh->maxElement, 1.5f * ofGetHeight() / mesh->maxElement, 0.1f * ofGetHeight());
+            
             //ofScale(35.0f, 35.0f);
-            ofRotate(mouseY * (1.0/6.0f), 1, 0, 0);
-            ofRotate((mouseX - 512) * (1.0/6.0f), 0, 1, 0);
             
             shader.begin();
             shader.setUniform3f("lightPosition", lightPos.x, lightPos.y, lightPos.z);
@@ -87,10 +90,11 @@ void ofApp :: draw() {
             
             const auto timeElapsed = ofGetSystemTime() - mesh->creationTime;
             
-            mesh->draw([&shader = shader, phase, offset, timeElapsed] (int x) {
-                const float wave = (1.0f + 3.0f * powf((1.0f + cosf(phase - offset * x)) * 0.5f, 1.5)) * (1.0  + tanh((timeElapsed * .0005f) - (x + 1) * 1.5f)) * 0.5;
-                shader.setUniform1f("offset", wave);
-            }, timeElapsed / 500);
+            mesh->draw([&shader = shader, phase, offset, timeElapsed, &mesh = mesh] (int x) {
+                const float wave = (1.0f + 3.0f * powf((1.0f + cosf(phase - offset * x)) * 0.5f, 1.5));
+                const float height = (1.0  + tanh((timeElapsed * .0005f) - (x + 1) * 10.0f / mesh->size())) * 0.5;
+                shader.setUniform1f("offset", wave * height);
+            }, timeElapsed * mesh->size() / 1000);
             
             shader.end();
             ofPopMatrix();

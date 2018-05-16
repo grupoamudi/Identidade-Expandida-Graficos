@@ -20,9 +20,9 @@ public:
 	void setHeight(const size_t index, const float height);
 	void setHeight(const vector<float> heights);
     
-    void draw();
-    void draw(function<void(int)> fun, size_t segments);
-    void drawWithNormalColors();
+    void draw() const;
+    void draw(function<void(int)> fun, size_t segments) const;
+    void drawWithNormalColors() const;
     
     // Since we don't ever use the new() operator, the default
     //  destructor is enough for us.

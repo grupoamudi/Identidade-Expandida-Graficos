@@ -187,7 +187,7 @@ FingerMesh :: FingerMesh(string filePath) {
 			char c;
 			float x, y;
 			sLine >> c >> x >> y;
-			vertices.push_back(ofVec3f(x, .0f, y));
+			vertices.push_back(ofVec3f(x, y, .0f));
 		}
     }
     
@@ -196,7 +196,6 @@ FingerMesh :: FingerMesh(string filePath) {
     //  finger curves.
     file.clear();
     file.seekg(0);
-
     
     while (!file.eof()) {
         char line[65536];
@@ -228,14 +227,17 @@ FingerMesh :: FingerMesh(string filePath) {
 			//  for us.
 			ofPath path;
 			for (auto const &i : indices) {
-				path.lineTo(vertices[i].x, .0f, vertices[i].z);
+				path.lineTo(vertices[i].x, vertices[i].y, .0f);
 			}
-            // Paths are also no enclosed in the OBJ, so we
+            // Paths are also not enclosed in the OBJ, so we
             //  close them ourselves.
-            path.lineTo(vertices[0].x, .0f, vertices[0].z);
+            path.lineTo(vertices[0].x, vertices[0].y, .0f);
 			path.tessellate();
             ofMesh mesh = path.getTessellation();
             auto const vertsPerPlane = mesh.getVertices().size();
+            if (vertsPerPlane > indices.size()) {
+                cout << "Mesh segment " << this->size() << " has " << vertsPerPlane - indices.size() <<  " extra verts. Investigate." << endl;
+            }
             
             // We now have the mesh! But we aren't done.
             //  There are three things remaining:
@@ -267,7 +269,7 @@ FingerMesh :: FingerMesh(string filePath) {
             mesh.addVertices(mesh.getVertices());
             //  and adding a horizontal offset to them.
             for (auto x = mesh.getVertices().size() / 2; x < mesh.getVertices().size(); x++) {
-                mesh.getVertices()[x].y = 1.0f;
+                mesh.getVertices()[x].z = 1.0f;
             }
             
             // And now, stitching it all together.
@@ -288,7 +290,7 @@ FingerMesh :: FingerMesh(string filePath) {
             mesh.addIndices(upperPlaneIdx);
             
             // Now, finally the walls between planes.
-            vector<ofIndexType> wallsIdx(6 * newIndices.size());
+            /*vector<ofIndexType> wallsIdx(6 * newIndices.size());
             for (auto x = 0; x < newIndices.size(); x++) {
                 wallsIdx[6 * x] = newIndices[x];
                 wallsIdx[6 * x + 1] = newIndices[x] + vertsPerPlane;
@@ -298,11 +300,10 @@ FingerMesh :: FingerMesh(string filePath) {
                 wallsIdx[6 * x + 5] = newIndices[(x + 1) % newIndices.size()] + vertsPerPlane;
             }
             mesh.addIndices(wallsIdx);
-            
+            */
             
             // Finally, for lighting purposes, we'll generate
             //  some normals for the mesh.
-            //TODO: TRIANGLES instead of TRIANGLE_STRIPs.
             
             vector<ofVec3f> normals(mesh.getVertices().size());
             fill(normals.begin(), normals.end(), ofVec3f(0.0));
@@ -344,6 +345,7 @@ FingerMesh :: FingerMesh(string filePath) {
         }
     }
     
+    accum.z = .0f;
     accum /= float(nVerts);
     
     for (ofMesh &m : *this) {
@@ -351,6 +353,16 @@ FingerMesh :: FingerMesh(string filePath) {
             v -= accum;
         }
     }
+    
+    // And as a last step, we sort our meshes to make
+    //  the animation system work.
+    std::sort(this->begin(), this->end(),
+        [] (const ofMesh &a, const ofMesh &b) {
+            const ofVec3f aAvg = accumulate(a.getVertices().begin(), a.getVertices().end(), ofVec3f(.0f)) / a.getVertices().size();
+            const ofVec3f bAvg = accumulate(b.getVertices().begin(), b.getVertices().end(), ofVec3f(.0f)) / b.getVertices().size();
+            return aAvg.dot(aAvg) < bAvg.dot(bAvg);
+        }
+    );
     
     this->calculateMaxElement();
     creationTime = ofGetSystemTime();
@@ -372,7 +384,7 @@ void FingerMesh :: draw() {
 */
 
 /* OpenGL 2.0 way */
-void FingerMesh :: draw() {
+void FingerMesh :: draw() const {
     for (auto x = 0; x < this->size(); x++) {
         float height = this->at(x).getVertices().back().z;
         ofColor c;
@@ -383,7 +395,7 @@ void FingerMesh :: draw() {
 }
 
 /* OpenGL 3.0 way */
-void FingerMesh::draw(function<void(int)> fun, size_t segments) {
+void FingerMesh::draw(function<void(int)> fun, size_t segments) const {
     for (auto x = 0; x < min(this->size(), segments); x++) {
         fun(x);
         this->at(x).draw();
@@ -391,7 +403,7 @@ void FingerMesh::draw(function<void(int)> fun, size_t segments) {
 }
 
 
-void FingerMesh :: drawWithNormalColors() {
+void FingerMesh :: drawWithNormalColors() const {
     for (ofMesh mesh : *this) {
         auto verts = mesh.getVertices();
         auto norms = mesh.getNormals();
