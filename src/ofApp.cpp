@@ -25,16 +25,7 @@ void ofApp :: setup() {
 }
 
 //--------------------------------------------------------------
-void ofApp :: update() {
-    // Animation part
-    /*if (mesh) {
-        const float phase = M_PI * (ofGetSystemTime() % 2048) / 1024.0f;
-        const float offset = M_PI * 0.15f;
-        for (int x = 0; x < mesh->size(); x++) {
-            mesh->setHeight(x, 1.0f + 3.0f * powf((1.0f + cosf(phase - offset * x)) * 0.5f, 1.5));
-        }
-    }*/
-}
+void ofApp :: update() { }
 
 //--------------------------------------------------------------
 void ofApp :: draw() {
@@ -57,7 +48,8 @@ void ofApp :: draw() {
     
     ofPushMatrix();
     ofTranslate(512 + float(10) * sinf(x / float(30.0)), 484);
-    ofScale(35.0f, 35.0f);
+    ofScale(0.7f * ofGetWindowHeight() / mesh->maxElement, 0.7f * ofGetWindowHeight() / mesh->maxElement);
+    //ofScale(35.0f, 35.0f);
     ofRotate(mouseY * (1.0/6.0f), 1, 0, 0);
     ofRotate((mouseX - 512) * (1.0/6.0f), 0, 1, 0);
     //ofRotate(x * 0.1f, 0, 0, 1);

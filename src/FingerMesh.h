@@ -11,6 +11,7 @@
 class FingerMesh : public vector<ofVboMesh> {
 public:
     uint64_t creationTime;
+    float maxElement;
 	// Initializes with a default, oval mesh for test purposes.
     FingerMesh();
 	// Loads from a file, which should be default behavior.
@@ -25,5 +26,8 @@ public:
     
     // Since we don't ever use the new() operator, the default
     //  destructor is enough for us.
+    
+protected:
+    void calculateMaxElement();
 };
 

@@ -157,6 +157,7 @@ FingerMesh :: FingerMesh() {
         this->push_back(mesh);
     }
     
+    this->calculateMaxElement();
     creationTime = ofGetSystemTime();
 }
 
@@ -244,10 +245,11 @@ FingerMesh :: FingerMesh(string filePath) {
             vector<ofIndexType> newIndices(indices.size());
             
             for (auto x = 0; x < indices.size(); x++) {
+                ofVec3f const anchorVertex = vertices[indices[x]];
                 newIndices[x] = min_element(mesh.getVertices().begin(), mesh.getVertices().end(),
-                    [vertices, x] (ofVec3f a, ofVec3f b) {
-                        const ofVec3f ad = a - vertices[x];
-                        const ofVec3f bd = b - vertices[x];
+                    [&anchorVertex] (ofVec3f a, ofVec3f b) {
+                        const ofVec3f ad = a - anchorVertex;
+                        const ofVec3f bd = b - anchorVertex;
                         return ad.dot(ad) < bd.dot(bd);
                     }) - mesh.getVertices().begin();
             }
@@ -266,7 +268,7 @@ FingerMesh :: FingerMesh(string filePath) {
             //  old indices array, with the added offset
             //  of the extra vertices.
             
-            auto vertsPerPlane = mesh.getIndices().size() / 2;
+            auto const vertsPerPlane = mesh.getIndices().size() / 2;
             
             vector<ofIndexType> upperPlaneIdx(mesh.getIndices());
             for(auto &idx : upperPlaneIdx) {
@@ -300,8 +302,8 @@ FingerMesh :: FingerMesh(string filePath) {
             //  end we just normalize our accumulated vectors,
             //  and have a very good approximation of the true
             //  smooth vertex normal.
-            auto const vertRef = mesh.getVertices();
-            auto const idxRef = mesh.getIndices();
+            auto const &vertRef = mesh.getVertices();
+            auto const &idxRef = mesh.getIndices();
             for (auto x = 0; x < idxRef.size() - 2; x++) {
                 /* const */ ofVec3f v1 = ofVec3f(vertRef[idxRef[x]] - vertRef[idxRef[x + 1]]);
                 const ofVec3f v2 = ofVec3f(vertRef[idxRef[x]] - vertRef[idxRef[x + 2]]);
@@ -324,8 +326,8 @@ FingerMesh :: FingerMesh(string filePath) {
     //  and re-center the mesh group.
     ofVec3f accum(.0f);
     int nVerts = 0;
-    for (ofMesh &m : *this) {
-        for (ofVec3f &v : m.getVertices()) {
+    for (ofMesh const &m : *this) {
+        for (ofVec3f const &v : m.getVertices()) {
             accum += v;
             nVerts++;
         }
@@ -339,6 +341,7 @@ FingerMesh :: FingerMesh(string filePath) {
         }
     }
     
+    this->calculateMaxElement();
     creationTime = ofGetSystemTime();
 }
 
@@ -417,4 +420,17 @@ void FingerMesh :: setHeight(const vector<float> heights) {
             vertices[x].z = heights[y];
         }
     }
+}
+
+void FingerMesh :: calculateMaxElement() {
+    maxElement = std::accumulate(this->begin(), this->end(), .0f,
+        [] (float const accum, ofMesh const &m) {
+            return max(accum, std::accumulate(m.getVertices().begin(), m.getVertices().end(), .0f,
+                    [] (float const accum, ofVec3f const &v) {
+                        return max(max(max(accum, fabsf(v.x)), fabsf(v.y)), fabsf(v.z));
+                    }
+                )
+            );
+        }
+    );
 }
