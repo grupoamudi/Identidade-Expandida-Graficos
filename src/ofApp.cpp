@@ -84,6 +84,7 @@ void ofApp :: draw() {
             shader.setUniform1f("noisePower", 0.3f);
             shader.setUniformTexture("palette", palette.getTexture(), 0);
             shader.setUniform1f("time", (ofGetSystemTime() % 4096) / 2048.0f);
+            shader.setUniform1f("spawnTime", (ofGetSystemTime() - mesh->creationTime) * .005f);
             
             // Great for debugging!
             //ofIcoSpherePrimitive(10.0, 0).draw();

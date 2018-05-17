@@ -6,7 +6,7 @@
 
 uniform mat4 modelViewProjectionMatrix;
 //uniform float offset;
-uniform float time;
+uniform float time, spawnTime;
 in vec4 position;
 in vec3 normal;
 out vec3 rawNormal, spacePos, screenPos;
@@ -19,8 +19,9 @@ float WaveFun(float x, float t, float f, float p) {
 }
 
 void main() {
-    vec2 dist = position.xy;
-    offsetV = WaveFun(sqrt(dot(dist, dist) * 0.0000005), time, 1.0, 2.0);
+    float dist = sqrt(dot(position.xy, position.xy));
+    offsetV = WaveFun(dist * 0.0005, time, 1.0, 2.0);
+    offsetV *= (1.0  + tanh(spawnTime - (dist + 4.0) * .01)) * 0.5;
     
     vec4 transformPos = position * vec4(1.0, 1.0, offsetV, 1.0);
     spacePos = transformPos.xyz;

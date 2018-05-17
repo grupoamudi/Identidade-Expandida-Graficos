@@ -54,7 +54,7 @@ void main() {
     normal = normalize(normal);// + noisePower * noise * exp(-depth));
     
     // TODO: add more lights using a uniform array
-    float lightDiff = clamp(dot(normal, normalize(lightPosition - screenPos)), 0.0, 1.0);
+    float lightDiff = clamp(abs(dot(normal, normalize(lightPosition - screenPos))), 0.0, 1.0);
     
     outputColor.rgb = ambient + texture(palette, vec2((offsetV - 1.0)/3.0, 0.5)).rgb * diffuse * lightDiff;
     outputColor.a = 1.0;
