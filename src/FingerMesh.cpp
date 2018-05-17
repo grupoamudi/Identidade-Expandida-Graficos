@@ -191,6 +191,8 @@ FingerMesh :: FingerMesh(string filePath) {
 		}
     }
     
+    
+    
     // We then rewind the file, now looking for
     //  polygons / faces, representing different
     //  finger curves.
@@ -226,18 +228,16 @@ FingerMesh :: FingerMesh(string filePath) {
 			//  the complex polygon and tesselate it
 			//  for us.
 			ofPath path;
-			for (auto const &i : indices) {
-				path.lineTo(vertices[i].x, vertices[i].y, .0f);
+            for (auto x = 0; x < indices.size(); x++) {
+				path.lineTo(vertices[indices[x]].x, vertices[indices[x]].y, .0f);
 			}
             // Paths are also not enclosed in the OBJ, so we
             //  close them ourselves.
-            path.lineTo(vertices[0].x, vertices[0].y, .0f);
+            path.lineTo(vertices[indices[0]].x, vertices[indices[0]].y, .0f);
 			path.tessellate();
             ofMesh mesh = path.getTessellation();
+            
             auto const vertsPerPlane = mesh.getVertices().size();
-            if (vertsPerPlane > indices.size()) {
-                cout << "Mesh segment " << this->size() << " has " << vertsPerPlane - indices.size() <<  " extra verts. Investigate." << endl;
-            }
             
             // We now have the mesh! But we aren't done.
             //  There are three things remaining:
@@ -266,11 +266,13 @@ FingerMesh :: FingerMesh(string filePath) {
             }
             
             // Duplicating lower and upper vertices...
-            mesh.addVertices(mesh.getVertices());
+            vector<ofVec3f> upperVertices(mesh.getVertices());
+            
             //  and adding a horizontal offset to them.
-            for (auto x = mesh.getVertices().size() / 2; x < mesh.getVertices().size(); x++) {
-                mesh.getVertices()[x].z = 1.0f;
+            for (auto x = 0; x < upperVertices.size(); x++) {
+                upperVertices[x].z = 1.0f;
             }
+            mesh.addVertices(upperVertices);
             
             // And now, stitching it all together.
             //
@@ -290,7 +292,7 @@ FingerMesh :: FingerMesh(string filePath) {
             mesh.addIndices(upperPlaneIdx);
             
             // Now, finally the walls between planes.
-            /*vector<ofIndexType> wallsIdx(6 * newIndices.size());
+            vector<ofIndexType> wallsIdx(6 * newIndices.size());
             for (auto x = 0; x < newIndices.size(); x++) {
                 wallsIdx[6 * x] = newIndices[x];
                 wallsIdx[6 * x + 1] = newIndices[x] + vertsPerPlane;
@@ -300,7 +302,7 @@ FingerMesh :: FingerMesh(string filePath) {
                 wallsIdx[6 * x + 5] = newIndices[(x + 1) % newIndices.size()] + vertsPerPlane;
             }
             mesh.addIndices(wallsIdx);
-            */
+            
             
             // Finally, for lighting purposes, we'll generate
             //  some normals for the mesh.

@@ -10,6 +10,7 @@ uniform sampler2D palette;
 uniform float offset, noisePower, ambient, diffuse;
 uniform vec3 lightPosition;
 
+in float offsetV;
 in vec3 rawNormal, spacePos, screenPos;
 out vec4 outputColor;
 
@@ -55,7 +56,7 @@ void main() {
     // TODO: add more lights using a uniform array
     float lightDiff = clamp(dot(normal, normalize(lightPosition - screenPos)), 0.0, 1.0);
     
-    outputColor.rgb = ambient + texture(palette, vec2((offset - 1.0)/3.0, 0.5)).rgb * diffuse * lightDiff;
+    outputColor.rgb = ambient + texture(palette, vec2((offsetV - 1.0)/3.0, 0.5)).rgb * diffuse * lightDiff;
     outputColor.a = 1.0;
     
 }

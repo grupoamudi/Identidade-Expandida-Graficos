@@ -69,6 +69,9 @@ void ofApp :: draw() {
             
             ofRotate(180.0f, 0, 0, 1);
             ofRotate(-45.0f, 1, 0, 0);
+            //ofRotate((mouseX - 512) * 0.3f, 0, 1, 0);
+            //ofRotate((mouseY - 384) * 0.3f, 1, 0, 0);
+            
             
             ofScale(1.5f * ofGetHeight() / mesh->maxElement, 1.5f * ofGetHeight() / mesh->maxElement, 0.1f * ofGetHeight());
             
@@ -80,21 +83,21 @@ void ofApp :: draw() {
             shader.setUniform1f("diffuse", .9f);
             shader.setUniform1f("noisePower", 0.3f);
             shader.setUniformTexture("palette", palette.getTexture(), 0);
-            shader.setUniform1f("time", (ofGetSystemTime() % 2048) / 512.0f);
+            shader.setUniform1f("time", (ofGetSystemTime() % 4096) / 2048.0f);
             
             // Great for debugging!
             //ofIcoSpherePrimitive(10.0, 0).draw();
             
-            const float phase = M_PI * (ofGetSystemTime() % 2048) / 1024.0f;
+            const float phase = M_PI * (ofGetSystemTime() % 4096) / 2048.0f;
             const float offset = M_PI * 0.15f;
             
             const auto timeElapsed = ofGetSystemTime() - mesh->creationTime;
             
-            mesh->draw([&shader = shader, phase, offset, timeElapsed, &mesh = mesh] (int x) {
+            mesh->draw(/*[&shader = shader, phase, offset, timeElapsed, &mesh = mesh] (int x) {
                 const float wave = (1.0f + 3.0f * powf((1.0f + cosf(phase - offset * x)) * 0.5f, 1.5));
                 const float height = (1.0  + tanh((timeElapsed * .0005f) - (x + 1) * 10.0f / mesh->size())) * 0.5;
                 shader.setUniform1f("offset", wave * height);
-            }, timeElapsed * mesh->size() / 1000);
+                        }*/[](int a){}, timeElapsed * mesh->size() / 1000);
             
             shader.end();
             ofPopMatrix();
@@ -115,13 +118,18 @@ void ofApp :: keyPressed(int key) {
         statsEnabled ^= 1;
     }
     if (key == 'f') {
-        dummyFile ^= 1;
+        /*dummyFile ^= 1;
         if (dummyFile) {
             ofstream dummy("TestFile.obj", ios::trunc);
             dummy << "v 0 0\nv 1 0\nv 1 1\nv 1 0\nf 0 1 2 3 0";
         }
         else {
             remove("TestFile.obj");
+        }*/
+        for(auto x = 0; x < mesh->size(); x++) {
+            std::string saveString = "MeshDump " + to_string(x);
+            saveString += ".ply";
+            mesh->at(x).save(saveString);
         }
     }
 }
