@@ -8,7 +8,7 @@
 #endif
 
 #pragma once
-class FingerMesh : public vector<ofVboMesh> {
+class FingerMesh : public vector<ofMesh> {
 public:
     uint64_t creationTime;
     float maxElement;

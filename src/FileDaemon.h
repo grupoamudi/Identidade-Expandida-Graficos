@@ -19,7 +19,7 @@ protected:
     void daemon();
     
 public:
-    mutex mut;
+    mutex mut, meshMut;
     FileDaemon(shared_ptr<FingerMesh> *ref, string fileName);
     ~FileDaemon();
     bool isFileReady();

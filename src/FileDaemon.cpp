@@ -49,8 +49,10 @@ void FileDaemon :: daemon() {
                     ifstream file(fileName);
                     if (!file.good()) {
                         state = FILE_NONE;
+                        meshMut.lock();
                         meshRef->reset();
                         cout << "File " << fileName << " deleted!" << endl;
+                        meshMut.unlock();
                     }
                 }  break;
             }

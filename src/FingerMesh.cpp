@@ -142,7 +142,7 @@ FingerMesh :: FingerMesh() {
         
         
         // And we're ready to build our mesh.
-        ofVboMesh mesh;
+        ofMesh mesh;
         mesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
         mesh.addVertices(vertices);
 #ifdef DEBUG_WITH_COLORS
@@ -152,7 +152,7 @@ FingerMesh :: FingerMesh() {
         //mesh.addColors(colors);
 #endif
         mesh.addIndices(indices);
-        mesh.setUsage(GL_DYNAMIC_DRAW);
+        //mesh.setUsage(GL_DYNAMIC_DRAW);
         
         this->push_back(mesh);
     }

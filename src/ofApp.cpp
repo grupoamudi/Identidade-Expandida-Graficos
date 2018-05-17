@@ -61,6 +61,7 @@ void ofApp :: draw() {
     //  an incomplete mesh object, therefore crashing the program.
 #ifndef DEBUG_MODE
     if (daemon && daemon->isFileReady()){
+        daemon->meshMut.lock();
 #endif
         if (mesh) {
             ofPushMatrix();
@@ -84,7 +85,13 @@ void ofApp :: draw() {
             shader.setUniform1f("noisePower", 0.3f);
             shader.setUniformTexture("palette", palette.getTexture(), 0);
             shader.setUniform1f("time", (ofGetSystemTime() % 4096) / 2048.0f);
-            shader.setUniform1f("spawnTime", (ofGetSystemTime() - mesh->creationTime) * .005f);
+            
+            // We need a hack here to avoid an apparent
+            //  "black hole" that devours the mesh
+            //  after a certain amount of time. It's
+            //  due to finite precision of the regular
+            //  32-bit float type. :(
+            shader.setUniform1f("spawnTime", min(64.0f, (ofGetSystemTime() - mesh->creationTime) * .005f));
             
             // Great for debugging!
             //ofIcoSpherePrimitive(10.0, 0).draw();
@@ -104,6 +111,7 @@ void ofApp :: draw() {
             ofPopMatrix();
         }
 #ifndef DEBUG_MODE
+        daemon->meshMut.unlock();
     }
 #endif
     //glFlush();
