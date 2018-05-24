@@ -127,19 +127,8 @@ void ofApp :: keyPressed(int key) {
         statsEnabled ^= 1;
     }
     if (key == 'f') {
-        /*dummyFile ^= 1;
-        if (dummyFile) {
-            ofstream dummy("TestFile.obj", ios::trunc);
-            dummy << "v 0 0\nv 1 0\nv 1 1\nv 1 0\nf 0 1 2 3 0";
-        }
-        else {
-            remove("TestFile.obj");
-        }*/
-        for(auto x = 0; x < mesh->size(); x++) {
-            std::string saveString = "MeshDump " + to_string(x);
-            saveString += ".ply";
-            mesh->at(x).save(saveString);
-        }
+        fullScreen ^= 1;
+        ofSetFullscreen(fullScreen);
     }
 }
 

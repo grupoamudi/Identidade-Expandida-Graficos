@@ -17,6 +17,7 @@ private:
     ofImage palette;
     bool statsEnabled = false;
     bool dummyFile = false;
+    bool fullScreen = false;
     uint64_t lastFrameTime;
     uint64_t startupTime;
     int mouseX = 512;
