@@ -16,6 +16,8 @@ FingerMesh :: FingerMesh() {
     // 3. Stitch faces together with indexes
     // and after that, we can finally render it.
     
+    vector<ofMesh> meshes;
+    
     const float thickness = 1.0f;
     
     for (auto r = 2; r < 15; r += 3) {
@@ -154,8 +156,10 @@ FingerMesh :: FingerMesh() {
         mesh.addIndices(indices);
         //mesh.setUsage(GL_DYNAMIC_DRAW);
         
-        this->push_back(mesh);
+        meshes.push_back(mesh);
     }
+    
+    this->flattenMeshVec(meshes);
     
     this->calculateMaxElement();
     creationTime = ofGetSystemTime();
@@ -172,6 +176,8 @@ FingerMesh :: FingerMesh(string filePath) {
         cout << strerror(errno) << endl;
         throw "Something has gone wrong with the file!\n";
     }
+    
+    vector<ofMesh> meshes;
     
     // First, we read the vertices and store them into
     //  a single vector, to later assembly the meshes.
@@ -281,9 +287,6 @@ FingerMesh :: FingerMesh(string filePath) {
             //  old indices array, with the added offset
             //  of the extra vertices.
             
-            //TODO: Modify to account for GL_TRIANGLES,
-            //  instead of GL_TRIANGLE_STRIP
-            
             vector<ofIndexType> upperPlaneIdx(mesh.getIndices());
             for(auto &idx : upperPlaneIdx) {
                 idx += vertsPerPlane;
@@ -332,7 +335,7 @@ FingerMesh :: FingerMesh(string filePath) {
             mesh.addNormals(normals);
             
             // And so we can add our mesh to the scene.
-			this->push_back(mesh);
+			meshes.push_back(mesh);
 		}
     }
     
@@ -340,7 +343,7 @@ FingerMesh :: FingerMesh(string filePath) {
     //  and re-center the mesh group.
     ofVec3f accum(.0f);
     int nVerts = 0;
-    for (ofMesh const &m : *this) {
+    for (ofMesh const &m : meshes) {
         for (ofVec3f const &v : m.getVertices()) {
             accum += v;
             nVerts++;
@@ -350,7 +353,7 @@ FingerMesh :: FingerMesh(string filePath) {
     accum.z = .0f;
     accum /= float(nVerts);
     
-    for (ofMesh &m : *this) {
+    for (ofMesh &m : meshes) {
         for (ofVec3f &v : m.getVertices()) {
             v -= accum;
         }
@@ -358,7 +361,7 @@ FingerMesh :: FingerMesh(string filePath) {
     
     // And as a last step, we sort our meshes to make
     //  the animation system work.
-    std::sort(this->begin(), this->end(),
+    std::sort(meshes.begin(), meshes.end(),
         [] (const ofMesh &a, const ofMesh &b) {
             const ofVec3f aAvg = accumulate(a.getVertices().begin(), a.getVertices().end(), ofVec3f(.0f)) / a.getVertices().size();
             const ofVec3f bAvg = accumulate(b.getVertices().begin(), b.getVertices().end(), ofVec3f(.0f)) / b.getVertices().size();
@@ -366,96 +369,72 @@ FingerMesh :: FingerMesh(string filePath) {
         }
     );
     
+    this->flattenMeshVec(meshes);
+    
     this->calculateMaxElement();
     creationTime = ofGetSystemTime();
 }
 
-/*
- I wish I could do simply this. I really wish I could.
- 
-void FingerMesh :: draw() {
-    for (auto mesh : *this) {
-        mesh.draw();
-    }
-}
- 
- But the compiler will turn that into a copy constructor,
-  and copy and destroy objects all over the place, making
-  it a very inefficient way of drawing. We have to use
-  raw loops, instead - it saves 20x as much CPU time.
-*/
-
-/* OpenGL 2.0 way */
-void FingerMesh :: draw() const {
-    for (auto x = 0; x < this->size(); x++) {
-        float height = this->at(x).getVertices().back().z;
-        ofColor c;
-        c.setHsb(80 + height * 15, 80 + height * 30, 200);
-        ofSetColor(c.r, c.g, c.b);
-        this->at(x).draw();
-    }
-}
-
-/* OpenGL 3.0 way */
-void FingerMesh::draw(function<void(int)> fun, size_t segments) const {
-    for (auto x = 0; x < min(this->size(), segments); x++) {
-        fun(x);
-        this->at(x).draw();
-    }
-}
-
-
 void FingerMesh :: drawWithNormalColors() const {
-    for (ofMesh mesh : *this) {
-        auto verts = mesh.getVertices();
-        auto norms = mesh.getNormals();
-        vector<ofVec3f> normals(verts.size() * 2);
-        vector<ofFloatColor> normalColors(norms.size() * 2);
-        for (auto x = 0; x < verts.size(); x++) {
-            normals[2 * x] = verts[x];
-            ofVec3f vPlusN = verts[x] + norms[x];
-            normals[2 * x + 1] = vPlusN;
-            ofVec3f nNorm = (norms[x] * 0.5f) + 0.5f;
-            ofFloatColor nColor = ofFloatColor(nNorm.x, nNorm.y, nNorm.z, 1.0f);
-            normalColors[2 * x] = nColor;
-            normalColors[2 * x + 1] = normalColors[2 * x];
-        }
-
-        ofMesh normalView;
-        normalView.setMode(OF_PRIMITIVE_LINES);
-        normalView.addVertices(normals);
-        normalView.addColors(normalColors);
-
-        normalView.draw();
+    auto verts = this->getVertices();
+    auto norms = this->getNormals();
+    vector<ofVec3f> normals(verts.size() * 2);
+    vector<ofFloatColor> normalColors(norms.size() * 2);
+    for (auto x = 0; x < verts.size(); x++) {
+        normals[2 * x] = verts[x];
+        ofVec3f vPlusN = verts[x] + norms[x];
+        normals[2 * x + 1] = vPlusN;
+        ofVec3f nNorm = (norms[x] * 0.5f) + 0.5f;
+        ofFloatColor nColor = ofFloatColor(nNorm.x, nNorm.y, nNorm.z, 1.0f);
+        normalColors[2 * x] = nColor;
+        normalColors[2 * x + 1] = normalColors[2 * x];
     }
-}
 
+    ofMesh normalView;
+    normalView.setMode(OF_PRIMITIVE_LINES);
+    normalView.addVertices(normals);
+    normalView.addColors(normalColors);
 
-void FingerMesh :: setHeight(const size_t index, const float height) {
-    auto &vertices = this->at(index).getVertices();
-    for (auto x = vertices.size() / 2; x < vertices.size(); x++) {
-        vertices[x].z = height;
-    }
-}
-
-void FingerMesh :: setHeight(const vector<float> heights) {
-    for (auto y = 0; y < heights.size() && y < this->size(); y++) {
-        vector<ofVec3f> vertices = this->at(y).getVertices();
-        for (auto x = vertices.size() / 2; x < vertices.size(); x++) {
-            vertices[x].z = heights[y];
-        }
-    }
+    normalView.draw();
 }
 
 void FingerMesh :: calculateMaxElement() {
-    maxElement = std::accumulate(this->begin(), this->end(), .0f,
-        [] (float const accum, ofMesh const &m) {
-            return max(accum, std::accumulate(m.getVertices().begin(), m.getVertices().end(), .0f,
-                    [] (float const accum, ofVec3f const &v) {
-                        return max(max(max(accum, fabsf(v.x)), fabsf(v.y)), fabsf(v.z));
-                    }
-                )
-            );
+    maxElement = std::accumulate(this->getVertices().begin(), this->getVertices().end(), .0f,
+        [] (float const accum, ofVec3f const &v) {
+            return max(max(max(accum, fabsf(v.x)), fabsf(v.y)), fabsf(v.z));
         }
     );
+}
+
+void FingerMesh :: flattenMeshVec(vector<ofMesh>  const &meshVec) {
+    const auto numVerts =
+        accumulate(meshVec.begin(), meshVec.end(), 0, [] (auto const accum, ofMesh const &mesh) {
+            return accum + mesh.getVertices().size();
+    });
+    this->getVertices().reserve(numVerts);
+    
+    const auto numNormals =
+    accumulate(meshVec.begin(), meshVec.end(), 0, [] (auto const accum, ofMesh const &mesh) {
+        return accum + mesh.getNormals().size();
+    });
+    this->getNormals().reserve(numNormals);
+    
+    const auto numIndices =
+    accumulate(meshVec.begin(), meshVec.end(), 0, [] (auto const accum, ofMesh const &mesh) {
+        return accum + mesh.getIndices().size();
+    });
+    this->getIndices().reserve(numIndices);
+    
+    for (ofMesh const &mesh : meshVec) {
+        const auto currVertices = this->getVertices().size();
+        const auto currIndices = this->getIndices().size();
+        
+        this->addVertices(mesh.getVertices());
+        this->addNormals(mesh.getNormals());
+        this->addIndices(mesh.getIndices());
+        
+        for (auto i = currIndices; i < this->getIndices().size(); i++) {
+            this->getIndices()[i] += currVertices;
+        }
+    }
 }

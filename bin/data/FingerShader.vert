@@ -26,7 +26,7 @@ void main() {
     vec4 transformPos = position * vec4(1.0, 1.0, offsetV, 1.0);
     spacePos = transformPos.xyz;
     transformPos = modelViewProjectionMatrix * transformPos;
-    gl_Position = transformPos;
+    gl_Position = dist < (spawnTime * 128.0) ? transformPos : vec4(1.0/0.0);
     screenPos = transformPos.xyz;
     vec4 intermediateNormal = vec4(normalize(normal * vec3(1.0, 1.0, 1.0 / offsetV)), 0.0) + transformPos;
     rawNormal = vec3(modelViewProjectionMatrix * intermediateNormal) - transformPos.xyz;

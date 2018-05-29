@@ -38,7 +38,7 @@ void ofApp :: draw() {
 #ifndef DEBUG_MODE
         if (daemon && daemon->isFileReady()) {
 #endif
-            const int numPolys = mesh ? accumulate(mesh->begin(), mesh->end(), 0, [](int acc, ofMesh mesh) { return acc + mesh.getIndices().size() / 3 ;}) : 0;
+            const int numPolys = mesh ? accumulate(mesh->getIndices().begin(), mesh->getIndices().end(), 0) / 3 : 0;
             string strPolys = "Num. Polys in scene: " + to_string(numPolys) + "\n";
             strPolys += "FPS: " + to_string(ofGetFrameRate()) + "\n";
             strPolys += "GPU load: ";
@@ -96,16 +96,7 @@ void ofApp :: draw() {
             // Great for debugging!
             //ofIcoSpherePrimitive(10.0, 0).draw();
             
-            const float phase = M_PI * (ofGetSystemTime() % 4096) / 2048.0f;
-            const float offset = M_PI * 0.15f;
-            
-            const auto timeElapsed = ofGetSystemTime() - mesh->creationTime;
-            
-            mesh->draw(/*[&shader = shader, phase, offset, timeElapsed, &mesh = mesh] (int x) {
-                const float wave = (1.0f + 3.0f * powf((1.0f + cosf(phase - offset * x)) * 0.5f, 1.5));
-                const float height = (1.0  + tanh((timeElapsed * .0005f) - (x + 1) * 10.0f / mesh->size())) * 0.5;
-                shader.setUniform1f("offset", wave * height);
-                        }*/[](int a){}, timeElapsed * mesh->size() / 1000);
+            mesh->draw();
             
             shader.end();
             ofPopMatrix();
