@@ -91,7 +91,10 @@ void ofApp :: draw() {
             //  after a certain amount of time. It's
             //  due to finite precision of the regular
             //  32-bit float type. :(
-            shader.setUniform1f("spawnTime", min(64.0f, (ofGetSystemTime() - mesh->creationTime) * .005f));
+            // For 24-bit GPUs (like mobile chipsets
+            //  and NV3x), the problem is even worse;
+            //  hence the 40.0 cap.
+            shader.setUniform1f("spawnTime", min(40.0f, (ofGetSystemTime() - mesh->creationTime) * .005f));
             
             // Great for debugging!
             //ofIcoSpherePrimitive(10.0, 0).draw();
